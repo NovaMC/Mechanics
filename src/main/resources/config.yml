@@ -6,8 +6,8 @@ enable-pinging: true
 enable-navigation-book: true
 
 portalcoords:
-  overworld-coords: "&ePortal coords for Overworld: (X:%x Y:%y Z:%z)"
-  nether-coords: "&ePortal coords for Nether: (X:%x Y:%y Z:%z)"
+  overworld-coords: "&ePortal coords in Nether: (X:%x Y:%y Z:%z)"
+  nether-coords: "&ePortal coords in Overworld: (X:%x Y:%y Z:%z)"
 
 fallfromvoid:
   # The y level at which FallFromVoid should forgive the player and send them towards the sky.
