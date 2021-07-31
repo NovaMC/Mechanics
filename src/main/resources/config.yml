@@ -1,0 +1,33 @@
+# Enable or disable various features in the plugin
+enable-chairs: true
+enable-ffv: true
+enable-portalcoords: true
+enable-pinging: true
+enable-navigation-book: true
+
+portalcoords:
+  overworld-coords: "&ePortal coords for Overworld: (X:%x Y:%y Z:%z)"
+  nether-coords: "&ePortal coords for Nether: (X:%x Y:%y Z:%z)"
+
+fallfromvoid:
+  # The y level at which FallFromVoid should forgive the player and send them towards the sky.
+  trigger-at-y: -48
+  # The height from which the player will be falling after falling through the void.
+  fall-height: 512
+  # Prevent death on void fall (limits damage to leave at least 0.5 hearts)
+  prevent-death: false
+  # Apply a custom amount of damage to take from any height (with damage-on-fall)
+  custom-damage: true
+  # The amount of damage applied to the player when they land.
+  damage-on-fall: 19
+  # Set to true to trigger in the overworld sky.
+  trigger-in-world: false
+  # Set to true to trigger in the end void.
+  trigger-in-end: true
+  # Name of your overworld
+  world: world
+  # Name of your end world
+  end-world: world_the_end
+
+# Message for insufficient perms
+no-permission: "&cYou don't have permission to use that command!"

@@ -1,0 +1,20 @@
+name: NovaMechanics
+author: Nova
+description: Adds sitting, void tp, and more.
+version: 1.0-SNAPSHOT
+main: xyz.novaserver.mechanics.NovaMechanics
+api-version: 1.16
+softdepend: [floodgate, Essentials]
+
+commands:
+  novamech:
+    description: "Admin commands for Mechanics."
+  portalcoords:
+    description: "Converts coordinates to ease portal making."
+permissions:
+  mechanics.admin:
+    description: "Gives access to admin commands."
+    default: op
+  mechanics.portalcoords:
+    description: "Gives access to /portalcoords."
+    default: true
