@@ -5,10 +5,12 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class Chair {
@@ -29,8 +31,17 @@ public class Chair {
     }
 
     public void createChair() {
-        this.stand = chair.getLocation().getWorld()
-                .spawn(chair.getLocation().add(0.5D, 0.3D, 0.5D), ArmorStand.class, settings -> {
+        Location loc = chair.getLocation().add(0.5D, 0.3D, 0.5D);
+
+        // Remove existing stands if they exist
+        /* Temporary cleanup code
+        Collection<ArmorStand> near = loc.getNearbyEntitiesByType(ArmorStand.class, 0.5D);
+        near.stream()
+                .filter(e -> !e.isVisible() && e.isInvulnerable())
+                .forEach(Entity::remove);
+        */
+        this.stand = loc.getWorld()
+                .spawn(loc, ArmorStand.class, settings -> {
             settings.setGravity(false);
             settings.setMarker(true);
             settings.setSmall(true);

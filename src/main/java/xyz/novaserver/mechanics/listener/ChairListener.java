@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -92,6 +93,14 @@ public class ChairListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
+        if (handler.isSitting(player)) {
+            handler.dismount(player);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent e) {
+        Player player = e.getPlayer();
         if (handler.isSitting(player)) {
             handler.dismount(player);
         }

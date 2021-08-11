@@ -12,13 +12,15 @@ import xyz.novaserver.mechanics.listener.VoidFallListener;
 public class NovaMechanics extends JavaPlugin {
 
     private VoidFallListener voidFallListener;
+    private ChairInitializer chairInitializer;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
         if (getConfig().getBoolean("enable-chairs")) {
-            new ChairInitializer().initialize(this);
+            chairInitializer = new ChairInitializer();
+            chairInitializer.initialize(this);
         }
         if (getConfig().getBoolean("enable-ffv")) {
             voidFallListener = new VoidFallListener(this);
@@ -37,6 +39,13 @@ public class NovaMechanics extends JavaPlugin {
         }
 
         getCommand("novamech").setExecutor(new MechanicsCommand(this));
+    }
+
+    @Override
+    public void onDisable() {
+        if (getConfig().getBoolean("enable-chairs")) {
+            chairInitializer.cleanup();
+        }
     }
 
     public void reload() {
