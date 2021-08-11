@@ -34,8 +34,7 @@ public class ChairListener implements Listener {
         Player player = e.getPlayer();
 
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand() == EquipmentSlot.HAND && !player.isSneaking()
-                && (player.getInventory().getItemInMainHand() == null
-                || player.getInventory().getItemInMainHand().getType() == Material.AIR)) {
+                && player.getInventory().getItemInMainHand().getType() == Material.AIR) {
 
             Block block = e.getClickedBlock();
             BlockData data = block.getBlockData();
@@ -44,16 +43,19 @@ public class ChairListener implements Listener {
             if ((e.getClickedBlock().getType().name().contains("STAIRS")
                     || e.getClickedBlock().getType().name().contains("SLAB"))) {
 
-                if (data instanceof Stairs) {
-                    Stairs stairs = (Stairs) data;
+                if (data instanceof Stairs stairs) {
                     bottomHalf = stairs.getHalf() == Bisected.Half.BOTTOM;
                 }
-                else if (data instanceof Slab) {
-                    Slab slab = (Slab) data;
+                else if (data instanceof Slab slab) {
                     bottomHalf = slab.getType() == Slab.Type.BOTTOM;
                 }
 
-                if (bottomHalf && block.getRelative(BlockFace.UP).isEmpty()
+                if (player.getEyeLocation().distanceSquared(block.getLocation().add(0.5D, 0.5D, 0.5D)) > 5.0D) {
+                    return;
+                }
+
+                Block relative = block.getRelative(BlockFace.UP);
+                if (bottomHalf && relative.isPassable() && !relative.isLiquid()
                         && player.getLocation().getY() + 1.0D >= block.getY() ) {
 
                     e.setCancelled(true);
