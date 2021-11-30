@@ -1,20 +1,19 @@
-package xyz.novaserver.mechanics.chair;
+package xyz.novaserver.mechanics.features.chairs;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class Chair {
-    private final ChairInitializer initializer;
+    private final JavaPlugin plugin;
 
     private final Player player;
     private Block chair;
@@ -22,8 +21,8 @@ public class Chair {
 
     private BukkitTask task;
 
-    public Chair(ChairInitializer initializer, Player player, Block chair) {
-        this.initializer = initializer;
+    public Chair(JavaPlugin plugin, Player player, Block chair) {
+        this.plugin = plugin;
         this.player = player;
         this.chair = chair;
 
@@ -51,7 +50,7 @@ public class Chair {
             settings.addPassenger(player);
         });
 
-        this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(initializer.getPlugin(),
+        this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin,
                 () -> stand.setRotation(player.getLocation().getYaw(), 0.0f), 4L, 4L);
     }
 

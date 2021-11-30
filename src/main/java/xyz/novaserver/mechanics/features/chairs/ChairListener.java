@@ -1,4 +1,4 @@
-package xyz.novaserver.mechanics.listener;
+package xyz.novaserver.mechanics.features.chairs;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,15 +18,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.spigotmc.event.entity.EntityDismountEvent;
-import xyz.novaserver.mechanics.chair.ChairHandler;
-import xyz.novaserver.mechanics.chair.ChairInitializer;
 
 public class ChairListener implements Listener {
 
     private final ChairHandler handler;
 
-    public ChairListener(ChairInitializer initializer) {
-        this.handler = initializer.getHandler();
+    public ChairListener(ChairsFeature chairs) {
+        this.handler = chairs.getHandler();
     }
 
     @EventHandler

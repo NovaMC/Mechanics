@@ -1,8 +1,9 @@
-package xyz.novaserver.mechanics.item;
+package xyz.novaserver.mechanics.features.navigation_book;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
+import xyz.novaserver.mechanics.item.CustomItem;
 
 public class NavigationBook extends CustomItem {
     private static final String id = "navigation_book";

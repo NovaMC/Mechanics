@@ -6,7 +6,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-import xyz.novaserver.mechanics.util.ItemUtils;
 
 public abstract class CustomItem extends ItemStack {
     private final Plugin plugin;

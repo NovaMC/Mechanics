@@ -1,4 +1,4 @@
-package xyz.novaserver.mechanics.listener;
+package xyz.novaserver.mechanics.features.navigation_book;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
@@ -24,8 +24,7 @@ import org.geysermc.cumulus.response.SimpleFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import xyz.novaserver.mechanics.NovaMechanics;
-import xyz.novaserver.mechanics.util.ItemUtils;
-import xyz.novaserver.mechanics.item.NavigationBook;
+import xyz.novaserver.mechanics.item.ItemUtils;
 
 import java.util.Collection;
 import java.util.HashMap;

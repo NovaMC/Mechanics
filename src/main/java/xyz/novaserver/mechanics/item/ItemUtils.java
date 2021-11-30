@@ -1,11 +1,10 @@
-package xyz.novaserver.mechanics.util;
+package xyz.novaserver.mechanics.item;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-import xyz.novaserver.mechanics.item.CustomItem;
 
 public class ItemUtils {
     public static boolean instanceOf(ItemStack itemStack, CustomItem customItem, Plugin plugin) {

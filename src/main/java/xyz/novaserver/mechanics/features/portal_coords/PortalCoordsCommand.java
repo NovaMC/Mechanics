@@ -1,4 +1,4 @@
-package xyz.novaserver.mechanics.command;
+package xyz.novaserver.mechanics.features.portal_coords;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

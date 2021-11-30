@@ -1,4 +1,4 @@
-package xyz.novaserver.mechanics.listener;
+package xyz.novaserver.mechanics.features.pinging;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -10,15 +10,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import xyz.novaserver.mechanics.NovaMechanics;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.regex.Pattern;
 
 public class PingListener implements Listener {
 
-    private final NovaMechanics plugin;
+    private final JavaPlugin plugin;
 
-    public PingListener(NovaMechanics plugin) {
+    public PingListener(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 

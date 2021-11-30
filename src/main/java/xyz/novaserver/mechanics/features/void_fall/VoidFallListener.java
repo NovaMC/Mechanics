@@ -1,4 +1,4 @@
-package xyz.novaserver.mechanics.listener;
+package xyz.novaserver.mechanics.features.void_fall;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

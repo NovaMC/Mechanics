@@ -1,9 +1,11 @@
 # Enable or disable various features in the plugin
-enable-chairs: true
-enable-ffv: true
-enable-portalcoords: true
-enable-pinging: true
-enable-navigation-book: true
+features:
+  chairs: false
+  launchpads: false
+  navigation-book: false
+  pinging: false
+  portal-coords: false
+  void-fall: false
 
 portalcoords:
   overworld-coords: "&ePortal coords in Nether: (X:%x Y:%y Z:%z)"

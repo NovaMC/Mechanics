@@ -2,40 +2,44 @@ package xyz.novaserver.mechanics;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.novaserver.mechanics.chair.ChairInitializer;
-import xyz.novaserver.mechanics.command.MechanicsCommand;
-import xyz.novaserver.mechanics.command.PortalCoordsCommand;
-import xyz.novaserver.mechanics.listener.NavigationListener;
-import xyz.novaserver.mechanics.listener.PingListener;
-import xyz.novaserver.mechanics.listener.VoidFallListener;
+import xyz.novaserver.mechanics.features.Cleanable;
+import xyz.novaserver.mechanics.features.Feature;
+import xyz.novaserver.mechanics.features.Reloadable;
+import xyz.novaserver.mechanics.features.chairs.ChairsFeature;
+import xyz.novaserver.mechanics.features.launch_pads.LauchpadFeature;
+import xyz.novaserver.mechanics.features.navigation_book.NavigationFeature;
+import xyz.novaserver.mechanics.features.pinging.PingingFeature;
+import xyz.novaserver.mechanics.features.portal_coords.PortalCoordsFeature;
+import xyz.novaserver.mechanics.features.void_fall.VoidFallFeature;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class NovaMechanics extends JavaPlugin {
 
-    private VoidFallListener voidFallListener;
-    private ChairInitializer chairInitializer;
+    private final Set<Feature> features = new HashSet<>();
+
+    private void addIfEnabled(String key, Feature feature) {
+        if (getConfig().getBoolean("features." + key)) {
+            features.add(feature);
+        }
+    }
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
-        if (getConfig().getBoolean("enable-chairs")) {
-            chairInitializer = new ChairInitializer();
-            chairInitializer.initialize(this);
-        }
-        if (getConfig().getBoolean("enable-ffv")) {
-            voidFallListener = new VoidFallListener(this);
-            getServer().getPluginManager().registerEvents(voidFallListener, this);
-        }
-        if (getConfig().getBoolean("enable-portalcoords")) {
-            getCommand("portalcoords").setExecutor(new PortalCoordsCommand(this));
-        }
-        if (getConfig().getBoolean("enable-pinging")) {
-            getServer().getPluginManager().registerEvents(new PingListener(this), this);
-        }
-        if (getConfig().getBoolean("enable-navigation-book")
-                && getServer().getPluginManager().isPluginEnabled("floodgate")
-                && getServer().getPluginManager().isPluginEnabled("Essentials")) {
-            getServer().getPluginManager().registerEvents(new NavigationListener(this), this);
+        // Enable features
+        addIfEnabled("chairs", new ChairsFeature());
+        addIfEnabled("launchpads", new LauchpadFeature());
+        addIfEnabled("navigation-book", new NavigationFeature());
+        addIfEnabled("pinging", new PingingFeature());
+        addIfEnabled("portal-coords", new PortalCoordsFeature());
+        addIfEnabled("void-fall", new VoidFallFeature());
+
+        // Register features
+        for (Feature feature : features) {
+            feature.register(this);
         }
 
         getCommand("novamech").setExecutor(new MechanicsCommand(this));
@@ -43,16 +47,22 @@ public class NovaMechanics extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (getConfig().getBoolean("enable-chairs")) {
-            chairInitializer.cleanup();
+        // Cleanup any features that need it
+        for (Feature feature : features) {
+            if (feature instanceof Cleanable cleanable) {
+                cleanable.clean(this);
+            }
         }
     }
 
     public void reload() {
         reloadConfig();
 
-        if (voidFallListener != null) {
-            voidFallListener.reload();
+        // Reload any features that need it
+        for (Feature feature : features) {
+            if (feature instanceof Reloadable reloadable) {
+                reloadable.reload(this);
+            }
         }
     }
 

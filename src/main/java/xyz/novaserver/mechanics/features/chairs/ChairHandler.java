@@ -1,17 +1,18 @@
-package xyz.novaserver.mechanics.chair;
+package xyz.novaserver.mechanics.features.chairs;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
 public class ChairHandler {
-    private final ChairInitializer plugin;
+    private final JavaPlugin plugin;
     private final HashMap<UUID, Chair> sitting = new HashMap<>();
 
-    public ChairHandler(ChairInitializer plugin) {
+    public ChairHandler(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
