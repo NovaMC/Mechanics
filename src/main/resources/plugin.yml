@@ -9,8 +9,13 @@ softdepend: [floodgate, Essentials]
 commands:
   novamech:
     description: "Admin commands for Mechanics."
+    permission: mechanics.admin
   portalcoords:
     description: "Converts coordinates to ease portal making."
+    permission: mechanics.portalcoords
+  runproxycmd:
+    description: "Runs a command on the proxy. (Console only)"
+    permission: mechanics.proxycmd
 permissions:
   mechanics.admin:
     description: "Gives access to admin commands."
@@ -18,3 +23,6 @@ permissions:
   mechanics.portalcoords:
     description: "Gives access to /portalcoords."
     default: true
+  mechanics.proxycmd:
+    description: "Used to run commands on proxy (Console only)"
+    default: false

@@ -10,6 +10,7 @@ import xyz.novaserver.mechanics.features.launch_pads.LauchpadFeature;
 import xyz.novaserver.mechanics.features.navigation_book.NavigationFeature;
 import xyz.novaserver.mechanics.features.pinging.PingingFeature;
 import xyz.novaserver.mechanics.features.portal_coords.PortalCoordsFeature;
+import xyz.novaserver.mechanics.features.proxy_cmd.ProxyCommandFeature;
 import xyz.novaserver.mechanics.features.void_fall.VoidFallFeature;
 
 import java.util.HashSet;
@@ -36,6 +37,7 @@ public class NovaMechanics extends JavaPlugin {
         addIfEnabled("pinging", new PingingFeature());
         addIfEnabled("portal-coords", new PortalCoordsFeature());
         addIfEnabled("void-fall", new VoidFallFeature());
+        addIfEnabled("proxy-cmd", new ProxyCommandFeature());
 
         // Register features
         for (Feature feature : features) {

@@ -6,6 +6,7 @@ features:
   pinging: false
   portal-coords: false
   void-fall: false
+  proxy-cmd: false
 
 portalcoords:
   overworld-coords: "&ePortal coords in Nether: (X:%x Y:%y Z:%z)"
