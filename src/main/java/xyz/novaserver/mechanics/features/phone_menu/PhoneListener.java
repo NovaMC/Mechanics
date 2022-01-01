@@ -6,11 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.item.ItemUtils;
@@ -31,7 +35,7 @@ public class PhoneListener implements Listener {
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event) {
         if (event.hasItem() && ItemUtils.instanceOf(event.getItem(), testItem, plugin)) {
-            if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 event.getPlayer().performCommand("menu");
             }
             event.setCancelled(true);
@@ -49,10 +53,27 @@ public class PhoneListener implements Listener {
     }
 
     @EventHandler
-    public void onItemMove(InventoryMoveItemEvent event) {
-        if (ItemUtils.instanceOf(event.getItem(), testItem, plugin)
-                && event.getSource() != event.getDestination()) {
+    public void onItemDrag(InventoryDragEvent event) {
+        Inventory topInv = event.getInventory();
+        if (ItemUtils.instanceOf(event.getOldCursor(), testItem, plugin)
+                && (topInv.getType() != InventoryType.PLAYER && topInv.getType() != InventoryType.CRAFTING)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemClick(InventoryClickEvent event) {
+        Inventory inv = event.getClickedInventory();
+        Inventory topInv = event.getInventory();
+        if ((inv != null && inv.getType() != InventoryType.PLAYER) || (topInv.getType() != InventoryType.PLAYER && topInv.getType() != InventoryType.CRAFTING)) {
+            if (ItemUtils.instanceOf(event.getCursor(), testItem, plugin) || ItemUtils.instanceOf(event.getCurrentItem(), testItem, plugin)) {
+                event.setCancelled(true);
+            } else if (event.getClick() == ClickType.NUMBER_KEY) {
+                ItemStack item = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+                if (ItemUtils.instanceOf(item, testItem, plugin)) {
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 

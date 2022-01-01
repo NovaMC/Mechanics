@@ -25,4 +25,4 @@ permissions:
     default: true
   mechanics.proxycmd:
     description: "Used to run commands on proxy (Console only)"
-    default: false
+    default: op

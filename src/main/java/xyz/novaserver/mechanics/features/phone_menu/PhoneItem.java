@@ -9,7 +9,7 @@ import xyz.novaserver.mechanics.item.ItemUtils;
 public class PhoneItem extends CustomItem {
     private static final String id = "phone";
     private static final Material material = Material.PAPER;
-    private static final String name = ItemUtils.translateHexColorCodes("&#", "&#55E3F9Phone");
+    private static final String name = ItemUtils.translateHexColorCodes("&#", "&#55f9d7Phone");
 
     public PhoneItem(Plugin plugin) {
         super(id, material, plugin);
