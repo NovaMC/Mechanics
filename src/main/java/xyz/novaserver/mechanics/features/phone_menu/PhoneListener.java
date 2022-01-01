@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.item.ItemUtils;
 
@@ -25,10 +26,12 @@ import java.util.HashMap;
 public class PhoneListener implements Listener {
 
     private final NovaMechanics plugin;
+    private final FloodgateApi floodgate;
     private final PhoneItem testItem;
 
     public PhoneListener(NovaMechanics plugin) {
         this.plugin = plugin;
+        this.floodgate = FloodgateApi.getInstance();
         this.testItem = new PhoneItem(plugin);
     }
 
@@ -92,6 +95,10 @@ public class PhoneListener implements Listener {
     private void givePlayerItem(Player player) {
         final int SLOT = 8;
         ItemStack slotItem = player.getInventory().getItem(SLOT);
+
+        if (floodgate.isFloodgatePlayer(player.getUniqueId())) {
+            return;
+        }
 
         // Return if player already has item
         if (Arrays.stream(player.getInventory().getContents())
