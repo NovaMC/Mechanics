@@ -146,16 +146,13 @@ public class NavigationListener implements Listener {
 
     private SimpleForm getMainForm(Player player) {
         User essUser = essentials.getUser(player.getUniqueId());
-        boolean hasTpRequest = essUser.getTeleportRequest() != null || essUser.hasOutstandingTeleportRequest();
-        boolean hasWarpList = essUser.isAuthorized("essentials.warp.list");
+        boolean hasTpRequest = essUser.getNextTpaRequest(false, false, false) != null;
 
         // Button/form names
         final String ACCEPT_TP = ChatColor.GREEN + "Accept Teleport";
         final String DENY_TP = ChatColor.RED + "Deny Teleport";
         final String PLAYERS = ChatColor.BLUE + "Players";
         final String HOMES = ChatColor.DARK_AQUA + "Homes";
-        final String WARPS = ChatColor.DARK_PURPLE + "Warps";
-        final String AUCTION = ChatColor.GOLD + "Auction House";
         final String TO_SPAWN = "To Spawn";
         final String TO_WILD = "To Wild";
 
@@ -165,8 +162,6 @@ public class NavigationListener implements Listener {
                 .optionalButton(DENY_TP, hasTpRequest)
                 .button(PLAYERS)
                 .button(HOMES)
-                .optionalButton(WARPS, hasWarpList)
-                .button(AUCTION)
                 .button(TO_SPAWN)
                 .button(TO_WILD)
                 .responseHandler((form, responseData) -> {
@@ -193,19 +188,12 @@ public class NavigationListener implements Listener {
                         player.performCommand("wild");
                         return;
                     }
-                    else if (text.equals(AUCTION)) {
-                        player.performCommand("ah");
-                        return;
-                    }
                     else if (text.equals(PLAYERS)) {
                         nextForm = getSimpleForm(player, essentials.getOnlinePlayers().stream().filter(p -> !p.equals(player))
                                 .map(HumanEntity::getName).collect(Collectors.toList()), text, "To who?", "tpa");
                     }
                     else if (text.equals(HOMES)) {
                         nextForm = getHomeForm(player, essUser.getHomes(), HOMES);
-                    }
-                    else if (text.equals(WARPS)) {
-                        nextForm = getSimpleForm(player, essentials.getWarps().getList(), text, "Where to?", "warp");
                     }
                     else {
                         return;
