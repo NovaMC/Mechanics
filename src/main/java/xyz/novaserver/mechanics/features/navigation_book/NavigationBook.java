@@ -1,6 +1,7 @@
 package xyz.novaserver.mechanics.features.navigation_book;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import xyz.novaserver.mechanics.item.CustomItem;
@@ -14,7 +15,7 @@ public class NavigationBook extends CustomItem {
     }
 
     @Override
-    public String getName() {
-        return ChatColor.LIGHT_PURPLE + "Navigation Book";
+    public Component getName() {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize("&dNavigation Book");
     }
 }

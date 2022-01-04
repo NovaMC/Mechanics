@@ -1,5 +1,6 @@
 package xyz.novaserver.mechanics.item;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,7 +21,7 @@ public abstract class CustomItem extends ItemStack {
         setKeyData(this.id);
     }
 
-    public abstract String getName();
+    public abstract Component getName();
 
     public String getId() {
         return this.id;
@@ -33,9 +34,9 @@ public abstract class CustomItem extends ItemStack {
         this.setItemMeta(meta);
     }
 
-    private void setName(String name) {
+    private void setName(Component name) {
         ItemMeta meta = this.getItemMeta();
-        meta.setDisplayName(name);
+        meta.displayName(name);
         this.setItemMeta(meta);
     }
 }

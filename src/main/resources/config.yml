@@ -9,6 +9,11 @@ features:
   proxy-cmd: false
   phone-menu: false
 
+phone:
+  command: "menu"
+  put-away: "&7You put away your phone! You can get it back at anytime with &b/phone&7."
+  take-out: "&7You brought your phone back out! You can put it away again by dropping it."
+
 portalcoords:
   overworld-coords: "&ePortal coords in Nether: (X:%x Y:%y Z:%z)"
   nether-coords: "&ePortal coords in Overworld: (X:%x Y:%y Z:%z)"

@@ -37,10 +37,13 @@ public class NavigationListener implements Listener {
     private final FloodgateApi floodgate;
     private final Essentials essentials;
 
+    private final NavigationBook TEST_ITEM;
+
     public NavigationListener(NovaMechanics plugin) {
         this.plugin = plugin;
         this.floodgate = FloodgateApi.getInstance();
         this.essentials = (Essentials) this.plugin.getServer().getPluginManager().getPlugin("Essentials");
+        this.TEST_ITEM = new NavigationBook(plugin);
     }
 
     @EventHandler
@@ -55,7 +58,7 @@ public class NavigationListener implements Listener {
 
         if (event.hasItem() && (event.getAction().equals(Action.RIGHT_CLICK_AIR)
                 || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-                && ItemUtils.instanceOf(event.getItem(), new NavigationBook(plugin), plugin)) {
+                && ItemUtils.instanceOf(event.getItem(), TEST_ITEM, plugin)) {
 
             event.setCancelled(true);
             fPlayer.sendForm(getMainForm(player));
@@ -75,8 +78,7 @@ public class NavigationListener implements Listener {
     @EventHandler
     public void onItemClick(InventoryClickEvent event) {
         // Cancel moving item if its a book
-        if (floodgate.isFloodgatePlayer(event.getWhoClicked().getUniqueId())
-                && ItemUtils.instanceOf(event.getCurrentItem(), new NavigationBook(plugin), plugin)) {
+        if (ItemUtils.instanceOf(event.getCurrentItem(), TEST_ITEM, plugin)) {
             event.setCancelled(true);
         }
     }
@@ -84,8 +86,7 @@ public class NavigationListener implements Listener {
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event) {
         // Cancel dropping item if its a book
-        if (floodgate.isFloodgatePlayer(event.getPlayer().getUniqueId())
-                && ItemUtils.instanceOf(event.getItemDrop().getItemStack(), new NavigationBook(plugin), plugin)) {
+        if (ItemUtils.instanceOf(event.getItemDrop().getItemStack(), TEST_ITEM, plugin)) {
             event.setCancelled(true);
         }
     }
@@ -93,41 +94,43 @@ public class NavigationListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Remove book from drops
-        event.getDrops().removeIf(item -> ItemUtils.instanceOf(item, new NavigationBook(plugin), plugin));
+        event.getDrops().removeIf(item -> ItemUtils.instanceOf(item, TEST_ITEM, plugin));
     }
 
     private void givePlayerBook(Player player) {
         final int SLOT = 8;
+        ItemStack slotItem = player.getInventory().getItem(SLOT);
 
         // Remove book if player is joining from their linked java account
         if (!floodgate.isFloodgatePlayer(player.getUniqueId())) {
 //            player.getInventory().forEach(item -> {
-//                if (ItemUtils.instanceOf(item, new NavigationBook(plugin), plugin)) {
+//                if (ItemUtils.instanceOf(item, TEST_ITEM, plugin)) {
 //                    player.getInventory().remove(item);
 //                }
 //            });
-            if (player.getInventory().getItem(SLOT) != null
-                    && ItemUtils.instanceOf(player.getInventory().getItem(SLOT), new NavigationBook(plugin), plugin)) {
-                player.getInventory().remove(player.getInventory().getItem(SLOT));
+            if (ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
+                player.getInventory().remove(slotItem);
             }
         }
         // Give players a book if they are joining from bedrock
         else if (floodgate.isFloodgatePlayer(player.getUniqueId())) {
-            ItemStack slotItem = player.getInventory().getItem(SLOT);
-
             // Return if player already has a book
 //            if (Arrays.stream(player.getInventory().getContents())
-//                    .anyMatch(item -> ItemUtils.instanceOf(item, new NavigationBook(plugin), plugin))) {
+//                    .anyMatch(item -> ItemUtils.instanceOf(item, TEST_ITEM, plugin))) {
 //                return;
 //            }
-            if (slotItem != null && ItemUtils.instanceOf(slotItem, new NavigationBook(plugin), plugin)) {
+            if (ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
                 return;
             }
 
+            // If slot is empty just put the book in the slot
+            if (slotItem == null || slotItem.getType() == Material.AIR) {
+                player.getInventory().setItem(SLOT, TEST_ITEM);
+            }
             // Give book and move item in hotbar slot
-            if (slotItem != null && !ItemUtils.instanceOf(slotItem, new NavigationBook(plugin), plugin)) {
+            else if (!ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
                 // Replace old item with book
-                player.getInventory().setItem(SLOT, new NavigationBook(plugin));
+                player.getInventory().setItem(SLOT, TEST_ITEM);
 
                 // Add old item back to inventory
                 HashMap<Integer, ItemStack> itemMap = player.getInventory().addItem(slotItem);
@@ -136,10 +139,6 @@ public class NavigationListener implements Listener {
                 if (!itemMap.isEmpty()) {
                     itemMap.forEach((integer, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack));
                 }
-            }
-            // If slot is empty just put the book in the slot
-            else if (slotItem == null || slotItem.getType() == Material.AIR) {
-                player.getInventory().setItem(SLOT, new NavigationBook(plugin));
             }
         }
     }

@@ -13,6 +13,8 @@ commands:
   portalcoords:
     description: "Converts coordinates to ease portal making."
     permission: mechanics.portalcoords
+  phone:
+    description: "Gives a player back their phone."
   runproxycmd:
     description: "Runs a command on the proxy. (Console only)"
     permission: mechanics.proxycmd
