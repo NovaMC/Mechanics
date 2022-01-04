@@ -1,6 +1,7 @@
 package xyz.novaserver.mechanics.features.navigation_book;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
@@ -16,6 +17,6 @@ public class NavigationBook extends CustomItem {
 
     @Override
     public Component getName() {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize("&dNavigation Book");
+        return LegacyComponentSerializer.legacyAmpersand().deserialize("&dNavigation Book").decoration(TextDecoration.ITALIC, false);
     }
 }

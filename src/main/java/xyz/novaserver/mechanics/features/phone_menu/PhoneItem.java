@@ -1,6 +1,7 @@
 package xyz.novaserver.mechanics.features.phone_menu;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +21,6 @@ public class PhoneItem extends CustomItem {
 
     @Override
     public Component getName() {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize("&#55f9d7Phone");
+        return LegacyComponentSerializer.legacyAmpersand().deserialize("&#55f9d7Phone").decoration(TextDecoration.ITALIC, false);
     }
 }

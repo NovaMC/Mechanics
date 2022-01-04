@@ -1,6 +1,8 @@
 package xyz.novaserver.mechanics.features.phone_menu;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,7 +54,13 @@ public class PhoneListener implements Listener {
     public void onItemInteract(PlayerInteractEvent event) {
         if (event.hasItem() && ItemUtils.instanceOf(event.getItem(), feature.TEST_ITEM, plugin)) {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                event.getPlayer().performCommand(plugin.getConfig().getString("phone.command", ""));
+                Player player = event.getPlayer();
+                String command = plugin.getConfig().getString("phone.command", "").replaceAll("%player%", player.getName());
+                if (plugin.getConfig().getBoolean("phone.run-as-player", true)) {
+                    player.performCommand(command);
+                } else {
+                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
+                }
                 event.setCancelled(true);
             }
         }
@@ -90,7 +98,8 @@ public class PhoneListener implements Listener {
         }
         else if (ItemUtils.instanceOf(event.getCurrentItem(), feature.TEST_ITEM, plugin)) {
             // If item in slot is a phone and the players to move it out of their inventory
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && clickInv != null && clickInv.getType() == InventoryType.PLAYER) {
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && clickInv != null
+                    && clickInv.getType() == InventoryType.PLAYER && event.getInventory().getType() != InventoryType.CRAFTING) {
                 event.setCancelled(true);
             }
         }

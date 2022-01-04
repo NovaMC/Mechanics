@@ -11,6 +11,7 @@ features:
 
 phone:
   command: "menu"
+  run-as-player: true
   put-away: "&7You put away your phone! You can get it back at anytime with &b/phone&7."
   take-out: "&7You brought your phone back out! You can put it away again by dropping it."
 

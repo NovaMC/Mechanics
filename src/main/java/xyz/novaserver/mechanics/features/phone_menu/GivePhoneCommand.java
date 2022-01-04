@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.novaserver.mechanics.item.ItemUtils;
@@ -27,6 +28,10 @@ public class GivePhoneCommand implements TabExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
+            return true;
+        }
+        if (FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "The phone can only be used by java players!");
             return true;
         }
 
