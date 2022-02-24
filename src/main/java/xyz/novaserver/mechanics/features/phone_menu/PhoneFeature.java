@@ -4,13 +4,14 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.item.ItemUtils;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PhoneFeature implements Feature {
 
@@ -18,12 +19,26 @@ public class PhoneFeature implements Feature {
     protected NamespacedKey PHONE_KEY;
     private NovaMechanics mechanics;
 
+    private Object floodgateApi;
+    private Method floodgate_isFloodgatePlayer;
+
     @Override
     public void register(NovaMechanics mechanics) {
         TEST_ITEM = new PhoneItem(mechanics);
         PHONE_KEY = new NamespacedKey(mechanics, "no_phone");
         this.mechanics = mechanics;
 
+        if (mechanics.getServer().getPluginManager().isPluginEnabled("floodgate")) {
+            try {
+                Class<?> floodgateApi_class = Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+                floodgateApi = floodgateApi_class.getMethod("getInstance").invoke(null);
+                floodgate_isFloodgatePlayer = floodgateApi_class.getMethod("isFloodgatePlayer", UUID.class);
+            } catch (ReflectiveOperationException e) {
+                // Floodgate class or method couldn't be found
+            }
+        }
+
+        // Register events and commands
         mechanics.getServer().getPluginManager().registerEvents(new PhoneListener(this), mechanics);
         mechanics.getCommand("phone").setExecutor(new GivePhoneCommand(this));
     }
@@ -32,9 +47,19 @@ public class PhoneFeature implements Feature {
         return mechanics;
     }
 
+    protected boolean isFloodgatePlayer(UUID uuid) {
+        try {
+            return (boolean) floodgate_isFloodgatePlayer.invoke(floodgateApi, uuid);
+        } catch (ReflectiveOperationException e) {
+            // Floodgate class or method couldn't be found
+        }
+        // Default to false if floodgate isn't loaded
+        return false;
+    }
+
     protected boolean givePlayerPhone(Player player) {
         // Return if player is on bedrock
-        if (FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) return false;
+        if (isFloodgatePlayer(player.getUniqueId())) return false;
 
         // Return if player already has item
         if (Arrays.stream(player.getInventory().getContents())

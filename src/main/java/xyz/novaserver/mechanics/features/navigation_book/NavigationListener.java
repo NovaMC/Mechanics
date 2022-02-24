@@ -2,83 +2,76 @@ package xyz.novaserver.mechanics.features.navigation_book;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.geysermc.cumulus.CustomForm;
-import org.geysermc.cumulus.Form;
 import org.geysermc.cumulus.SimpleForm;
-import org.geysermc.cumulus.response.CustomFormResponse;
-import org.geysermc.cumulus.response.SimpleFormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import xyz.novaserver.mechanics.NovaMechanics;
+import xyz.novaserver.mechanics.forms.CustomMenuForm;
+import xyz.novaserver.mechanics.forms.SimpleMenuForm;
 import xyz.novaserver.mechanics.item.ItemUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NavigationListener implements Listener {
 
+    private final NavigationFeature feature;
     private final NovaMechanics plugin;
+
     private final FloodgateApi floodgate;
     private final Essentials essentials;
 
-    private final NavigationBook TEST_ITEM;
-
-    public NavigationListener(NovaMechanics plugin) {
-        this.plugin = plugin;
-        this.floodgate = FloodgateApi.getInstance();
+    public NavigationListener(NavigationFeature feature) {
+        this.feature = feature;
+        this.plugin = feature.getMechanics();
+        this.floodgate = feature.getFloodgateApi();
         this.essentials = (Essentials) this.plugin.getServer().getPluginManager().getPlugin("Essentials");
-        this.TEST_ITEM = new NavigationBook(plugin);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        feature.givePlayerBook(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        feature.givePlayerBook(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        // Remove book from drops
+        event.getDrops().removeIf(item -> ItemUtils.instanceOf(item, feature.TEST_ITEM, plugin));
     }
 
     @EventHandler
     public void onNavigationInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-
         if (!floodgate.isFloodgatePlayer(player.getUniqueId())) {
             return;
         }
 
-        FloodgatePlayer fPlayer = floodgate.getPlayer(player.getUniqueId());
-
-        if (event.hasItem() && (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-                || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-                && ItemUtils.instanceOf(event.getItem(), TEST_ITEM, plugin)) {
-
-            event.setCancelled(true);
-            fPlayer.sendForm(getMainForm(player));
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        givePlayerBook(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        givePlayerBook(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onItemClick(InventoryClickEvent event) {
-        // Cancel moving item if its a book
-        if (ItemUtils.instanceOf(event.getCurrentItem(), TEST_ITEM, plugin)) {
+        // Check if the player clicks and the item is a navigation book
+        if (event.hasItem() && ItemUtils.instanceOf(event.getItem(), feature.TEST_ITEM, plugin)
+                && event.getAction() != Action.PHYSICAL) {
+            // Cancel event and send player the main form
+            floodgate.getPlayer(player.getUniqueId()).sendForm(getForms(player));
             event.setCancelled(true);
         }
     }
@@ -86,192 +79,102 @@ public class NavigationListener implements Listener {
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event) {
         // Cancel dropping item if its a book
-        if (ItemUtils.instanceOf(event.getItemDrop().getItemStack(), TEST_ITEM, plugin)) {
+        if (ItemUtils.instanceOf(event.getItemDrop().getItemStack(), feature.TEST_ITEM, plugin)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        // Remove book from drops
-        event.getDrops().removeIf(item -> ItemUtils.instanceOf(item, TEST_ITEM, plugin));
-    }
+    public void onItemClick(InventoryClickEvent event) {
+        Inventory clickInv = event.getClickedInventory();
 
-    private void givePlayerBook(Player player) {
-        final int SLOT = 8;
-        ItemStack slotItem = player.getInventory().getItem(SLOT);
-
-        // Remove book if player is joining from their linked java account
-        if (!floodgate.isFloodgatePlayer(player.getUniqueId())) {
-//            player.getInventory().forEach(item -> {
-//                if (ItemUtils.instanceOf(item, TEST_ITEM, plugin)) {
-//                    player.getInventory().remove(item);
-//                }
-//            });
-            if (ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
-                player.getInventory().remove(slotItem);
+        if (ItemUtils.instanceOf(event.getCursor(), feature.TEST_ITEM, plugin)) {
+            // If the item held on the cursor is placed outside the players inventory
+            if (clickInv != null && clickInv.getType() != InventoryType.PLAYER) {
+                event.setCancelled(true);
             }
         }
-        // Give players a book if they are joining from bedrock
-        else if (floodgate.isFloodgatePlayer(player.getUniqueId())) {
-            // Return if player already has a book
-//            if (Arrays.stream(player.getInventory().getContents())
-//                    .anyMatch(item -> ItemUtils.instanceOf(item, TEST_ITEM, plugin))) {
-//                return;
-//            }
-            if (ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
-                return;
+        else if (ItemUtils.instanceOf(event.getCurrentItem(), feature.TEST_ITEM, plugin)) {
+            // If item in slot is a phone and the players to move it out of their inventory
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && clickInv != null
+                    && clickInv.getType() == InventoryType.PLAYER && event.getInventory().getType() != InventoryType.CRAFTING) {
+                event.setCancelled(true);
             }
-
-            // If slot is empty just put the book in the slot
-            if (slotItem == null || slotItem.getType() == Material.AIR) {
-                player.getInventory().setItem(SLOT, TEST_ITEM);
-            }
-            // Give book and move item in hotbar slot
-            else if (!ItemUtils.instanceOf(slotItem, TEST_ITEM, plugin)) {
-                // Replace old item with book
-                player.getInventory().setItem(SLOT, TEST_ITEM);
-
-                // Add old item back to inventory
-                HashMap<Integer, ItemStack> itemMap = player.getInventory().addItem(slotItem);
-
-                // Try to give player old item by dropping if inventory is full
-                if (!itemMap.isEmpty()) {
-                    itemMap.forEach((integer, itemStack) -> player.getWorld().dropItem(player.getLocation(), itemStack));
-                }
+        }
+        // Check for hotbar item if neither items are a phone
+        else if (event.getClick() == ClickType.NUMBER_KEY) {
+            // Get hotbar item using pressed key
+            ItemStack numItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+            // Check if item is a phone and player did not click in their inventory
+            if (ItemUtils.instanceOf(numItem, feature.TEST_ITEM, plugin) && clickInv != null && clickInv.getType() != InventoryType.PLAYER) {
+                event.setCancelled(true);
             }
         }
     }
 
-    private SimpleForm getMainForm(Player player) {
+    private SimpleForm getForms(Player player) {
         User essUser = essentials.getUser(player.getUniqueId());
         boolean hasTpRequest = essUser.getNextTpaRequest(false, false, false) != null;
 
-        // Button/form names
-        final String ACCEPT_TP = ChatColor.GREEN + "Accept Teleport";
-        final String DENY_TP = ChatColor.RED + "Deny Teleport";
-        final String PLAYERS = ChatColor.BLUE + "Players";
-        final String HOMES = ChatColor.DARK_AQUA + "Homes";
-        final String TO_SPAWN = "To Spawn";
-        final String TO_WILD = "To Wild";
+        // Main menu form
+        SimpleMenuForm menuForm = new SimpleMenuForm(Component.text("Navigation Book").color(NamedTextColor.LIGHT_PURPLE), Component.empty());
+        // Sub-menu forms
+        SimpleMenuForm playersForm = new SimpleMenuForm(menuForm, Component.text("Players").color(NamedTextColor.BLUE));
+        SimpleMenuForm teleportsForm = new SimpleMenuForm(menuForm, Component.text("Locations").color(NamedTextColor.DARK_AQUA), Component.text("Choose a teleport location."));
+        SimpleMenuForm homesForm = new SimpleMenuForm(menuForm, Component.text("Homes").color(NamedTextColor.RED), Component.text("Manage your homes."));
+        SimpleMenuForm settingsForm = new SimpleMenuForm(menuForm, Component.text("Settings"), Component.text("Change server settings."));
 
-        SimpleForm.Builder mainForm = SimpleForm.builder()
-                .title(ChatColor.LIGHT_PURPLE + "Navigation Book")
-                .optionalButton(ACCEPT_TP, hasTpRequest)
-                .optionalButton(DENY_TP, hasTpRequest)
-                .button(PLAYERS)
-                .button(HOMES)
-                .button(TO_SPAWN)
-                .button(TO_WILD)
-                .responseHandler((form, responseData) -> {
-                    SimpleFormResponse response = form.parseResponse(responseData);
-                    if (!response.isCorrect()) return;
+        // Players start
+        // Add list of player buttons for players form
+        List<String> playerNames = essentials.getOnlinePlayers().stream()
+                .filter(p -> !p.equals(player)).map(HumanEntity::getName).toList();
+        if (!playerNames.isEmpty()) {
+            playersForm.setContent(Component.text("Choose a player to teleport to."));
+        } else {
+            playersForm.setContent(Component.text("There are no players online."));
+        }
+        playerNames.forEach(p -> playersForm.addSimpleButton(Component.text(p), () -> player.performCommand("tpa " + p)));
+        // Players end
 
-                    // Button pressed and next form
-                    String text = response.getClickedButton().getText();
-                    Form nextForm;
+        // Locations start
+        // Add locations to the location menu
+        teleportsForm.addSimpleButton(Component.text("Spawn"), () -> player.performCommand("spawn"))
+                .addSimpleButton(Component.text("Wild/Random"), () -> player.performCommand("wild"));
+        // Locations end
 
-                    if (text.equals(ACCEPT_TP)) {
-                        player.performCommand("tpaccept");
-                        return;
-                    }
-                    else if (text.equals(DENY_TP)) {
-                        player.performCommand("tpdeny");
-                        return;
-                    }
-                    else if (text.equals(TO_SPAWN)) {
-                        player.performCommand("spawn");
-                        return;
-                    }
-                    else if (text.equals(TO_WILD)) {
-                        player.performCommand("wild");
-                        return;
-                    }
-                    else if (text.equals(PLAYERS)) {
-                        nextForm = getSimpleForm(player, essentials.getOnlinePlayers().stream().filter(p -> !p.equals(player))
-                                .map(HumanEntity::getName).collect(Collectors.toList()), text, "To who?", "tpa");
-                    }
-                    else if (text.equals(HOMES)) {
-                        nextForm = getHomeForm(player, essUser.getHomes(), HOMES);
-                    }
-                    else {
-                        return;
-                    }
+        // Homes start
+        List<String> homes = essUser.getHomes();
+        CustomMenuForm addHome = new CustomMenuForm(homesForm, Component.text("Add Home").color(NamedTextColor.DARK_GREEN));
+        CustomMenuForm deleteHome = new CustomMenuForm(homesForm, Component.text("Delete Home").color(NamedTextColor.DARK_RED));
+        addHome.addInput(name -> player.performCommand("sethome " + name),
+                Component.text("Enter a name for your home."), "Enter name here...", "");
+        deleteHome.addDropdown(select -> player.performCommand("delhome " + homes.get(select)),
+                Component.text("Select a home to delete."), 0, homes.toArray(new String[0]));
 
-                    // Send the next form to the player
-                    floodgate.getPlayer(player.getUniqueId()).sendForm(nextForm);
-                });
+        homesForm.addFormButton(addHome);
+        if (!homes.isEmpty())
+            homesForm.addFormButton(deleteHome);
+        homes.forEach(home -> homesForm.addSimpleButton(Component.text(home), () -> player.performCommand("home " + home)));
+        // Homes end
 
-        return mainForm.build();
-    }
+        // Settings start
+        settingsForm.addSimpleButton(Component.text("Toggle PvP").color(NamedTextColor.RED), () -> player.performCommand("togglepvp"))
+                .addSimpleButton(Component.text("Toggle Scoreboard").color(NamedTextColor.DARK_PURPLE),
+                        () -> plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "tab scoreboard toggle " + player.getName()));
+        // Settings end
 
-    private SimpleForm getHomeForm(Player player, List<String> homes, String title) {
-        SimpleForm.Builder builder = SimpleForm.builder();
+        // Main menu start
+        // Add main menu form buttons
+        if (hasTpRequest) {
+            menuForm.addSimpleButton(Component.text("Accept Teleport").color(NamedTextColor.GREEN), () -> player.performCommand("tpaccept"))
+                    .addSimpleButton(Component.text("Deny Teleport").color(NamedTextColor.RED), () -> player.performCommand("tpdeny"));
+        }
+        menuForm.addFormButton(playersForm)
+                .addFormButton(teleportsForm)
+                .addFormButton(homesForm)
+                .addFormButton(settingsForm);
+        // Main menu end
 
-        // Button/form names
-        final String ADD_HOME = ChatColor.DARK_GREEN + "Add Home";
-        final String DEL_HOME = ChatColor.RED + "Remove Home";
-
-        // Populate form with home buttons
-        builder.button(ADD_HOME).optionalButton(DEL_HOME, !homes.isEmpty());
-        homes.forEach(builder::button);
-
-        // Add response handler for home command
-        builder.responseHandler((form, data) -> {
-            SimpleFormResponse response = form.parseResponse(data);
-            if (!response.isCorrect()) return;
-
-            CustomForm.Builder nextBuilder = CustomForm.builder();
-            String nextTitle = response.getClickedButton().getText();
-
-            // Setup form based on button pressed
-            if (nextTitle.equals(ADD_HOME)) {
-                nextBuilder.input("Enter a name for your home.", "Enter name here...");
-            }
-            else if (nextTitle.equals(DEL_HOME)) {
-                nextBuilder.dropdown("Select a home to delete.", homes.toArray(new String[0]));
-            }
-            else {
-                player.performCommand("home " + response.getClickedButton().getText());
-                return;
-            }
-
-            // Response handler for running sethome/delhome commands
-            nextBuilder.responseHandler((nextForm, newData) -> {
-                CustomFormResponse nextResponse = nextForm.parseResponse(newData);
-                if (!nextResponse.isCorrect()) return;
-
-                // Check if form is for adding or removing
-                if (nextTitle.equals(ADD_HOME) && nextResponse.getInput(0) != null) {
-                    player.performCommand("sethome "+ nextResponse.getInput(0));
-                }
-                else if (nextTitle.equals(DEL_HOME)) {
-                    player.performCommand("delhome " + homes.get(nextResponse.getDropdown(0)));
-                }
-
-            }).title(nextTitle);
-
-            // Send add/del home form
-            floodgate.getPlayer(player.getUniqueId()).sendForm(nextBuilder.build());
-        }).title(title).content("To what home?");
-
-        return builder.build();
-    }
-
-    private SimpleForm getSimpleForm(Player player, Collection<String> items, String title, String content, String cmd) {
-        SimpleForm.Builder builder = SimpleForm.builder();
-
-        // Populate form with buttons
-        items.forEach(builder::button);
-
-        // Add response handler for commands
-        builder.responseHandler((form, data) -> {
-            SimpleFormResponse response = form.parseResponse(data);
-            if (!response.isCorrect()) return;
-
-            player.performCommand(cmd + " " + response.getClickedButton().getText());
-        }).title(title).content(content);
-
-        return builder.build();
+        return menuForm.create(floodgate.getPlayer(player.getUniqueId()));
     }
 }

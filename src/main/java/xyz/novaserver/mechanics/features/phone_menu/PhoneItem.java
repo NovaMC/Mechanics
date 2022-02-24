@@ -9,18 +9,15 @@ import org.bukkit.plugin.Plugin;
 import xyz.novaserver.mechanics.item.CustomItem;
 
 public class PhoneItem extends CustomItem {
-    private static final String id = "phone";
-    private static final Material material = Material.PAPER;
+    private static final String ID = "phone";
+    private static final Material MATERIAL = Material.PAPER;
+    private static final Component NAME = LegacyComponentSerializer.legacyAmpersand()
+            .deserialize("&#55f9d7Phone").decoration(TextDecoration.ITALIC, false);
 
     public PhoneItem(Plugin plugin) {
-        super(id, material, plugin);
+        super(ID, MATERIAL, NAME, plugin);
         ItemMeta meta = getItemMeta();
         meta.setCustomModelData(201);
         setItemMeta(meta);
-    }
-
-    @Override
-    public Component getName() {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize("&#55f9d7Phone").decoration(TextDecoration.ITALIC, false);
     }
 }

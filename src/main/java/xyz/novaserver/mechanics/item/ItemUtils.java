@@ -1,5 +1,7 @@
 package xyz.novaserver.mechanics.item;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -20,5 +22,9 @@ public class ItemUtils {
 
     public static NamespacedKey getIdKey(Plugin plugin) {
         return new NamespacedKey(plugin, "id");
+    }
+
+    public static String toLegacyString(Component component) {
+        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 }

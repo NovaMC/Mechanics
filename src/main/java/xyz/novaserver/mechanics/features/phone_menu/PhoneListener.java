@@ -1,12 +1,9 @@
 package xyz.novaserver.mechanics.features.phone_menu;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -33,7 +30,7 @@ public class PhoneListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
-            feature.givePlayerPhone(player);
+            //feature.givePlayerPhone(player);
         }
     }
 
@@ -41,7 +38,7 @@ public class PhoneListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
-            feature.givePlayerPhone(player);
+            //feature.givePlayerPhone(player);
         }
     }
 
@@ -52,17 +49,18 @@ public class PhoneListener implements Listener {
 
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event) {
-        if (event.hasItem() && ItemUtils.instanceOf(event.getItem(), feature.TEST_ITEM, plugin)) {
-            if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                Player player = event.getPlayer();
-                String command = plugin.getConfig().getString("phone.command", "").replaceAll("%player%", player.getName());
-                if (plugin.getConfig().getBoolean("phone.run-as-player", true)) {
-                    player.performCommand(command);
-                } else {
-                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
-                }
-                event.setCancelled(true);
+        if (event.hasItem() && ItemUtils.instanceOf(event.getItem(), feature.TEST_ITEM, plugin) && event.getAction().isRightClick()) {
+            Player player = event.getPlayer();
+            String command = plugin.getConfig().getString("phone.command", "").replaceAll("%player%", player.getName());
+
+            // Decide if we should run command on the player or console
+            if (plugin.getConfig().getBoolean("phone.run-as-player", true)) {
+                player.performCommand(command);
+            } else {
+                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
             }
+            // Cancel the event from running
+            event.setCancelled(true);
         }
     }
 
