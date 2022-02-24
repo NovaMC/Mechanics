@@ -31,7 +31,7 @@ public class GivePhoneCommand implements TabExecutor {
             sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
             return true;
         }
-        if (feature.isFloodgatePlayer(player.getUniqueId())) {
+        if (feature.getFloodgateApi().isFloodgatePlayer(player.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "The phone can only be used by java players!");
             return true;
         }
