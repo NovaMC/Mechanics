@@ -7,7 +7,25 @@ features:
   portal-coords: false
   void-fall: false
   proxy-cmd: false
-  phone-menu: false
+  phone: false
+  new-players: false
+
+new-players:
+  cutscene:
+    # Sound/Music to play during cutscene
+    sound: music.village.selmie
+    category: RECORDS
+    volume: 0.6
+    pitch: 1.0
+    # Cutscene start delay
+    delay: 80
+    # Cutscene detect options
+    duration: 20
+    fade: true
+    # Animations to play in order
+    names:
+    - spawn-1
+    - spawn-2
 
 phone:
   command: "menu"

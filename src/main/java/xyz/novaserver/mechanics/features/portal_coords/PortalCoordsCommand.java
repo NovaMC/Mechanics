@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import xyz.novaserver.mechanics.NovaMechanics;
 
 import java.util.Collections;
@@ -21,8 +22,8 @@ public class PortalCoordsCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
             return true;
         }
@@ -31,7 +32,6 @@ public class PortalCoordsCommand implements TabExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
         Location newLocation = player.getLocation();
         String message;
 
@@ -60,7 +60,7 @@ public class PortalCoordsCommand implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         return Collections.emptyList();
     }
 }

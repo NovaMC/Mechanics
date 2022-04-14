@@ -31,13 +31,13 @@ import java.util.List;
 
 public class NavigationListener implements Listener {
 
-    private final NavigationFeature feature;
+    private final NavigationBookFeature feature;
     private final NovaMechanics plugin;
 
     private final FloodgateApi floodgate;
     private final Essentials essentials;
 
-    public NavigationListener(NavigationFeature feature) {
+    public NavigationListener(NavigationBookFeature feature) {
         this.feature = feature;
         this.plugin = feature.getMechanics();
         this.floodgate = feature.getFloodgateApi();

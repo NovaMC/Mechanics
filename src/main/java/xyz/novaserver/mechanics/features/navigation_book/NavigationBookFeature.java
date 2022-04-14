@@ -11,7 +11,7 @@ import xyz.novaserver.mechanics.item.ItemUtils;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class NavigationFeature implements Feature {
+public class NavigationBookFeature implements Feature {
 
     protected NavigationBook TEST_ITEM;
     private NovaMechanics mechanics;

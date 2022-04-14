@@ -4,7 +4,7 @@ description: Adds sitting, void tp, and more.
 version: 1.0-SNAPSHOT
 main: xyz.novaserver.mechanics.NovaMechanics
 api-version: 1.16
-softdepend: [floodgate, Essentials]
+softdepend: [floodgate, Essentials, NovaCutscenes]
 
 commands:
   novamech:
@@ -18,6 +18,9 @@ commands:
   runproxycmd:
     description: "Runs a command on the proxy. (Console only)"
     permission: mechanics.proxycmd
+  playspawnscene:
+    description: "Run the new player cutscene"
+    permission: mechanics.spawnscene
 permissions:
   mechanics.admin:
     description: "Gives access to admin commands."
@@ -27,4 +30,7 @@ permissions:
     default: true
   mechanics.proxycmd:
     description: "Used to run commands on proxy (Console only)"
+    default: op
+  mechanics.spawnscene:
+    description: "Gives access to /playspawnscene"
     default: op
