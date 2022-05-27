@@ -26,21 +26,21 @@ public class PhoneListener implements Listener {
         this.plugin = feature.getMechanics();
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
-            //feature.givePlayerPhone(player);
-        }
-    }
+//    @EventHandler
+//    public void onPlayerJoin(PlayerJoinEvent event) {
+//        Player player = event.getPlayer();
+//        if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
+//            feature.givePlayerPhone(player);
+//        }
+//    }
 
-    @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
-            //feature.givePlayerPhone(player);
-        }
-    }
+//    @EventHandler
+//    public void onPlayerRespawn(PlayerRespawnEvent event) {
+//        Player player = event.getPlayer();
+//        if (player.getPersistentDataContainer().getOrDefault(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 0) {
+//            feature.givePlayerPhone(player);
+//        }
+//    }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -69,7 +69,7 @@ public class PhoneListener implements Listener {
         Player player = event.getPlayer();
         if (ItemUtils.instanceOf(event.getItemDrop().getItemStack(), feature.TEST_ITEM, plugin)) {
             event.getItemDrop().remove();
-            // Set no_phone flag so we don't accidentally give the player their phone back
+            // Set no_phone flag, so we don't accidentally give the player their phone back
             player.getPersistentDataContainer().set(feature.PHONE_KEY, PersistentDataType.BYTE, (byte) 1);
 
             String message = plugin.getConfig().getString("phone.put-away", "");

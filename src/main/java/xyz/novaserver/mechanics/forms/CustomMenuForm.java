@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings("UnusedReturnValue")
 public class CustomMenuForm extends MenuForm<CustomForm> {
 
     private final List<CustomMenuComponent> components = new ArrayList<>();
@@ -68,6 +69,7 @@ public class CustomMenuForm extends MenuForm<CustomForm> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public CustomForm create(FloodgatePlayer player) {
         // Create a form with title and components

@@ -16,7 +16,7 @@ public class Chair {
     private final JavaPlugin plugin;
 
     private final Player player;
-    private Block chair;
+    private final Block chair;
     private ArmorStand stand;
 
     private BukkitTask task;
@@ -32,13 +32,6 @@ public class Chair {
     public void createChair() {
         Location loc = chair.getLocation().add(0.5D, 0.3D, 0.5D);
 
-        // Remove existing stands if they exist
-        /* Temporary cleanup code
-        Collection<ArmorStand> near = loc.getNearbyEntitiesByType(ArmorStand.class, 0.5D);
-        near.stream()
-                .filter(e -> !e.isVisible() && e.isInvulnerable())
-                .forEach(Entity::remove);
-        */
         this.stand = loc.getWorld()
                 .spawn(loc, ArmorStand.class, settings -> {
             settings.setGravity(false);

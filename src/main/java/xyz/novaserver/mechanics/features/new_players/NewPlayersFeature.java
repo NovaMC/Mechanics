@@ -33,6 +33,7 @@ public class NewPlayersFeature implements Feature {
         this.config = mechanics.getConfig();
         if (mechanics.getServer().getPluginManager().isPluginEnabled("NovaCutscenes")) {
             mechanics.getServer().getPluginManager().registerEvents(new CutsceneListener(this), mechanics);
+            //noinspection ConstantConditions
             mechanics.getCommand("playspawnscene").setExecutor(new SpawnSceneCommand(this));
 
             this.duration = config.getLong("new-players.cutscene.duration", 20);

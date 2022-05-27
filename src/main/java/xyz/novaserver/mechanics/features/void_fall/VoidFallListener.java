@@ -30,8 +30,6 @@ public class VoidFallListener implements Listener {
     private boolean preventDeath;
     private boolean customDamage;
     private double damageOnFall;
-    private boolean worldTrigger;
-    private boolean endTrigger;
     private String worldName;
     private String endName;
 
@@ -48,8 +46,6 @@ public class VoidFallListener implements Listener {
         preventDeath = config.getBoolean("fallfromvoid.prevent-death");
         customDamage = config.getBoolean("fallfromvoid.custom-damage");
         damageOnFall = config.getDouble("fallfromvoid.damage-on-fall");
-        worldTrigger = config.getBoolean("fallfromvoid.trigger-in-world");
-        endTrigger = config.getBoolean("fallfromvoid.trigger-in-end");
         worldName = config.getString("fallfromvoid.world");
         endName = config.getString("fallfromvoid.end-world");
     }
@@ -128,11 +124,9 @@ public class VoidFallListener implements Listener {
 
     @EventHandler
     public void onPlayerFall(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+        if (!(event.getEntity() instanceof Player player) || event.getCause() != EntityDamageEvent.DamageCause.FALL) {
             return;
         }
-
-        Player player = (Player) event.getEntity();
 
         if (voidFallMap.get(player.getUniqueId())) {
             if (!event.isCancelled()) {

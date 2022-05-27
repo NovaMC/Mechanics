@@ -1,6 +1,5 @@
 package xyz.novaserver.mechanics.features.phone_menu;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

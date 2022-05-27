@@ -35,8 +35,12 @@ public class ChairListener implements Listener {
                 && player.getInventory().getItemInMainHand().getType() == Material.AIR) {
 
             Block block = e.getClickedBlock();
-            BlockData data = block.getBlockData();
+            BlockData data = block != null ? block.getBlockData() : null;
             boolean bottomHalf = false;
+
+            if (data == null) {
+                return;
+            }
 
             if ((e.getClickedBlock().getType().name().contains("STAIRS")
                     || e.getClickedBlock().getType().name().contains("SLAB"))) {
@@ -67,9 +71,7 @@ public class ChairListener implements Listener {
 
     @EventHandler
     public void onEntityDismount(EntityDismountEvent e) {
-        if (e.getEntity() instanceof Player) {
-            Player player = (Player)e.getEntity();
-
+        if (e.getEntity() instanceof Player player) {
             if (handler.isSitting(player)) {
                 if (player.isSneaking()) {
                     handler.unsit(player);

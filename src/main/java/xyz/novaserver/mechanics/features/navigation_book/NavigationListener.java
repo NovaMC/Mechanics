@@ -78,7 +78,7 @@ public class NavigationListener implements Listener {
 
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event) {
-        // Cancel dropping item if its a book
+        // Cancel dropping item if it's a book
         if (ItemUtils.instanceOf(event.getItemDrop().getItemStack(), feature.TEST_ITEM, plugin)) {
             event.setCancelled(true);
         }

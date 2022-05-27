@@ -14,6 +14,7 @@ import xyz.novaserver.mechanics.item.ItemUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("UnusedReturnValue")
 public class SimpleMenuForm extends MenuForm<SimpleForm> {
 
     private final List<MenuButton> menuButtons = new ArrayList<>();

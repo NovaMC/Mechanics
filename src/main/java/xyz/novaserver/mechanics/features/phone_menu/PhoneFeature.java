@@ -9,10 +9,8 @@ import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.item.ItemUtils;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
 
 public class PhoneFeature implements Feature {
 
@@ -33,6 +31,7 @@ public class PhoneFeature implements Feature {
 
         // Register events and commands
         mechanics.getServer().getPluginManager().registerEvents(new PhoneListener(this), mechanics);
+        //noinspection ConstantConditions
         mechanics.getCommand("phone").setExecutor(new GivePhoneCommand(this));
     }
 

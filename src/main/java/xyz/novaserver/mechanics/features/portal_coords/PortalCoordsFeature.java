@@ -6,6 +6,7 @@ import xyz.novaserver.mechanics.features.Feature;
 public class PortalCoordsFeature implements Feature {
     @Override
     public void register(NovaMechanics mechanics) {
+        //noinspection ConstantConditions
         mechanics.getCommand("portalcoords").setExecutor(new PortalCoordsCommand(mechanics));
     }
 }
