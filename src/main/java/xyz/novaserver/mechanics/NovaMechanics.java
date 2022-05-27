@@ -1,58 +1,41 @@
 package xyz.novaserver.mechanics;
 
+import com.google.common.base.CaseFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.reflections.Reflections;
 import xyz.novaserver.mechanics.features.Cleanable;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.features.Reloadable;
-import xyz.novaserver.mechanics.features.chairs.ChairsFeature;
-import xyz.novaserver.mechanics.features.launch_pads.LauchpadsFeature;
-import xyz.novaserver.mechanics.features.navigation_book.NavigationBookFeature;
-import xyz.novaserver.mechanics.features.new_players.NewPlayersFeature;
-import xyz.novaserver.mechanics.features.phone_menu.PhoneFeature;
-import xyz.novaserver.mechanics.features.pinging.PingingFeature;
-import xyz.novaserver.mechanics.features.portal_coords.PortalCoordsFeature;
-import xyz.novaserver.mechanics.features.proxy_cmd.ProxyCmdFeature;
-import xyz.novaserver.mechanics.features.void_fall.VoidFallFeature;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class NovaMechanics extends JavaPlugin {
 
     private final Set<Feature> features = new HashSet<>();
 
-    private void addIfEnabled(String key, Class<? extends Feature> feature) throws ReflectiveOperationException {
-        if (getConfig().getBoolean("features." + key)) {
-            features.add(feature.getDeclaredConstructor().newInstance());
-        }
-    }
-
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
-        // Enable features
-        try {
-            addIfEnabled("chairs", ChairsFeature.class);
-            addIfEnabled("launchpads", LauchpadsFeature.class);
-            addIfEnabled("navigation-book", NavigationBookFeature.class);
-            addIfEnabled("pinging", PingingFeature.class);
-            addIfEnabled("portal-coords", PortalCoordsFeature.class);
-            addIfEnabled("void-fall", VoidFallFeature.class);
-            addIfEnabled("proxy-cmd", ProxyCmdFeature.class);
-            addIfEnabled("phone", PhoneFeature.class);
-            addIfEnabled("new-players", NewPlayersFeature.class);
-        } catch (ReflectiveOperationException e) {
-            getLogger().log(Level.SEVERE, "Reflection error occurred while trying to setup features", e);
+        // Load placeholders
+        Reflections reflections = new Reflections("xyz.novaserver.mechanics.features");
+        Set<Class<? extends Feature>> classes = reflections.getSubTypesOf(Feature.class);
+        for (Class<? extends Feature> clazz : classes) {
+            try {
+                // Try to register the feature
+                try {
+                    registerIfEnabled(clazz);
+                } catch (ReflectiveOperationException e) {
+                    getSLF4JLogger().error("A reflection error occurred while trying to register features!", e);
+                }
+            } catch (NoClassDefFoundError e) {
+                getSLF4JLogger().info("Not loading " + clazz.getSimpleName() + " because of missing classes!");
+            }
         }
 
-        // Register features
-        for (Feature feature : features) {
-            feature.register(this);
-        }
-
+        //noinspection ConstantConditions
         getCommand("novamech").setExecutor(new MechanicsCommand(this));
     }
 
@@ -63,6 +46,19 @@ public class NovaMechanics extends JavaPlugin {
             if (feature instanceof Cleanable cleanable) {
                 cleanable.clean(this);
             }
+        }
+    }
+
+    private void registerIfEnabled(Class<? extends Feature> clazz) throws ReflectiveOperationException {
+        // Convert class name to kebab-case
+        String featureName = clazz.getSimpleName().replace("Feature", "");
+        String configName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, featureName);
+
+        // If feature is set to enabled create a new instance and register it
+        if (getConfig().getBoolean("features." + configName, false)) {
+            Feature feature = clazz.getDeclaredConstructor().newInstance();
+            feature.register(this);
+            features.add(feature);
         }
     }
 
@@ -78,6 +74,6 @@ public class NovaMechanics extends JavaPlugin {
     }
 
     public String getColorString(String path) {
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString(path));
+        return ChatColor.translateAlternateColorCodes('&', getConfig().getString(path, ""));
     }
 }
