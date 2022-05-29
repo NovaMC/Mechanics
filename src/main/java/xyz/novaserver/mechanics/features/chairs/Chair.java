@@ -51,6 +51,10 @@ public class Chair {
         return chair;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     public void dismount() {
         task.cancel();
         this.player.leaveVehicle();

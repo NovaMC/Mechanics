@@ -3,9 +3,9 @@ package xyz.novaserver.mechanics.features.chairs;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.novaserver.mechanics.features.chairs.event.ChairSitEvent;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.UUID;
 
 public class ChairHandler {
@@ -28,32 +28,42 @@ public class ChairHandler {
     }
 
     public void dismount(Player player) {
-        sitting.get(player.getUniqueId()).dismount();
-        sitting.remove(player.getUniqueId());
+        Chair chair = sitting.get(player.getUniqueId());
+        ChairSitEvent event = ChairSitEvent.callEvent(chair);
+        if (!event.isCancelled()) {
+            chair.dismount();
+            sitting.remove(player.getUniqueId());
+        }
     }
 
     public void unsit(Player player) {
-        sitting.get(player.getUniqueId()).dismount();
-        sitting.get(player.getUniqueId()).teleport();
-        sitting.remove(player.getUniqueId());
+        Chair chair = sitting.get(player.getUniqueId());
+        ChairSitEvent event = ChairSitEvent.callEvent(chair);
+        if (!event.isCancelled()) {
+            chair.dismount();
+            chair.teleport();
+            sitting.remove(player.getUniqueId());
+        }
     }
 
-    public void unsit(Block chair) {
-        UUID remove = null;
-        Iterator<UUID> iterator = sitting.keySet().iterator();
-        if (iterator.hasNext()) {
-            UUID uuid = iterator.next();
-            Chair data = sitting.get(uuid);
+    public void unsit(Block block) {
+        UUID uuid = null;
+        Chair chair = null;
 
-            if (data.getChair().equals(chair)) {
-                data.dismount();
+        for (Chair c : sitting.values()) {
+            if (c.getChair().equals(block)) {
+                uuid = c.getPlayer().getUniqueId();
+                chair = c;
             }
-
-            remove = uuid;
         }
 
-        if (remove != null) {
-            sitting.remove(remove);
+        if (uuid != null) {
+            ChairSitEvent event = ChairSitEvent.callEvent(chair);
+            if (!event.isCancelled()) {
+                chair.dismount();
+                chair.teleport();
+                sitting.remove(uuid);
+            }
         }
     }
 
