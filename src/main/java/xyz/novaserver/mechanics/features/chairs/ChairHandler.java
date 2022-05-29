@@ -4,6 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.novaserver.mechanics.features.chairs.event.ChairSitEvent;
+import xyz.novaserver.mechanics.features.chairs.event.ChairUnsitEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -21,15 +22,21 @@ public class ChairHandler {
             if (sitting.get(player.getUniqueId()).getChair().equals(block)) {
                 return;
             }
-
             dismount(player);
         }
-        sitting.put(player.getUniqueId(), new Chair(plugin, player, block));
+
+        Chair chair = new Chair(plugin, player, block);
+        ChairSitEvent event = ChairSitEvent.callEvent(chair);
+        if (!event.isCancelled()) {
+            sitting.put(player.getUniqueId(), chair);
+        } else {
+            chair.dismount();
+        }
     }
 
     public void dismount(Player player) {
         Chair chair = sitting.get(player.getUniqueId());
-        ChairSitEvent event = ChairSitEvent.callEvent(chair);
+        ChairUnsitEvent event = ChairUnsitEvent.callEvent(chair);
         if (!event.isCancelled()) {
             chair.dismount();
             sitting.remove(player.getUniqueId());
@@ -38,7 +45,7 @@ public class ChairHandler {
 
     public void unsit(Player player) {
         Chair chair = sitting.get(player.getUniqueId());
-        ChairSitEvent event = ChairSitEvent.callEvent(chair);
+        ChairUnsitEvent event = ChairUnsitEvent.callEvent(chair);
         if (!event.isCancelled()) {
             chair.dismount();
             chair.teleport();
@@ -58,7 +65,7 @@ public class ChairHandler {
         }
 
         if (uuid != null) {
-            ChairSitEvent event = ChairSitEvent.callEvent(chair);
+            ChairUnsitEvent event = ChairUnsitEvent.callEvent(chair);
             if (!event.isCancelled()) {
                 chair.dismount();
                 chair.teleport();
