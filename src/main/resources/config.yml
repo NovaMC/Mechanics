@@ -9,6 +9,7 @@ features:
   proxy-cmd: false
   phone: false
   new-players: false
+  chatrooms: false
 
 new-players:
   cutscene:

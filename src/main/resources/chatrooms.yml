@@ -1,0 +1,30 @@
+options:
+  join:
+    # Minecraft sound to be played
+    # Default: unknown
+    sound: "minecraft:block.beacon.activate"
+    # The category to play the sound on
+    # You can find all categories here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+    # Default: RECORDS
+    category: MASTER
+    # Volume to play the sound at
+    # Default: 1.0
+    volume: 0.75
+    # Pitch to play the sound at
+    # Default: 1.0
+    pitch: 1.0
+    # Title to display on screen
+    title: "Joined chatroom %chatroom%"
+  leave:
+    sound: "minecraft:block.beacon.deactivate"
+    category: MASTER
+    volume: 0.75
+    pitch: 1.0
+    title: "Left chatroom %chatroom%"
+
+chatrooms:
+  lounge:
+    name: "Lounge"
+    # Will used title if defined, else use global one
+    join-title: "Joined Lounge"
+    leave-title: "Left Lounge"
