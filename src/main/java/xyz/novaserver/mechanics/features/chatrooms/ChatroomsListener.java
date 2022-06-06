@@ -9,16 +9,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionEnterEvent;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionExitEvent;
+import xyz.novaserver.placeholders.paper.Main;
 
 import java.util.*;
 
 public class ChatroomsListener implements Listener {
     private final ChatroomsFeature feature;
+    private final ChatroomFormatter formatter;
+    private final Main placeholders;
+
     private final Map<UUID, Chatroom> playerMap = new HashMap<>();
 
     public ChatroomsListener(ChatroomsFeature feature) {
         // feature
         this.feature = feature;
+        this.formatter = new ChatroomFormatter(feature);
+        this.placeholders = (Main) Bukkit.getPluginManager().getPlugin("NovaPlaceholders");
     }
 
     @EventHandler
@@ -48,20 +54,30 @@ public class ChatroomsListener implements Listener {
     public void onRegionEnter(RegionEnterEvent event) {
         String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
         UUID uuid = event.getPlayer().getUniqueId();
+
         // Player has entered or changed their chatroom
-        if (!playerMap.containsKey(uuid) || !playerMap.get(uuid).getId().equals(chatroom)) {
-            playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
+        if (playerMap.containsKey(uuid) && playerMap.get(uuid).getId().equals(chatroom)) {
+            return;
         }
+        playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
+
+        // Set chatroom formatter on player
+        placeholders.getChatManager().getFancyRenderer().setFormat(Bukkit.getPlayer(uuid), formatter);
     }
 
     @EventHandler
     public void onRegionExit(RegionExitEvent event) {
         String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
         UUID uuid = event.getPlayer().getUniqueId();
+
         // Player has exited a chatroom
-        if (chatroom == null || chatroom.equals("undefined") || !feature.getChatroomMap().containsKey(chatroom)) {
-            playerMap.remove(uuid);
+        if (chatroom != null && !chatroom.equals("undefined") && feature.getChatroomMap().containsKey(chatroom)) {
+            return;
         }
+        playerMap.remove(uuid);
+
+        // Remove chatroom formatter on player
+        placeholders.getChatManager().getFancyRenderer().removeFormat(Bukkit.getPlayer(uuid));
     }
 
     @EventHandler

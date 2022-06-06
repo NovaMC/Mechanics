@@ -21,10 +21,16 @@ options:
     volume: 0.75
     pitch: 1.0
     title: "Left chatroom %chatroom%"
+  chat:
+    java:
+      prefix: "&f闫 "
+      name-color: "&9"
+      message-color: "&f"
+    bedrock:
+      prefix: "&9[Chatroom] "
+      name-color: "&9"
+      message-color: "&f"
 
 chatrooms:
   lounge:
     name: "Lounge"
-    # Will used title if defined, else use global one
-    join-title: "Joined Lounge"
-    leave-title: "Left Lounge"

@@ -38,14 +38,25 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
 
     @Override
     public void register(NovaMechanics mechanics) {
+        if (!mechanics.getServer().getPluginManager().isPluginEnabled("NovaPlaceholders")) {
+            return;
+        }
         reload(mechanics);
         mechanics.getServer().getPluginManager().registerEvents(new ChatroomsListener(this), mechanics);
+    }
+
+    public Map<String, Chatroom> getChatroomMap() {
+        return chatroomMap;
+    }
+
+    public StringFlag getChatRoomFlag() {
+        return chatRoomFlag;
     }
 
     @Override
     public void reload(NovaMechanics mechanics) {
         config = loadConfig(mechanics);
-        if(config == null) {
+        if (config == null) {
             return;
         }
         chatroomMap.clear();
@@ -57,15 +68,6 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
                         chatroomMap.put(chatroom.getId(), chatroom);
                     }
                 });
-
-    }
-
-    public Map<String, Chatroom> getChatroomMap() {
-        return chatroomMap;
-    }
-
-    public StringFlag getChatRoomFlag() {
-        return chatRoomFlag;
     }
 
     private YamlConfiguration loadConfig(NovaMechanics mechanics) {
@@ -81,6 +83,10 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
             mechanics.getSLF4JLogger().error("Failed to load chatroom configuration!", e);
             return null;
         }
+        return config;
+    }
+
+    public YamlConfiguration getConfig() {
         return config;
     }
 
