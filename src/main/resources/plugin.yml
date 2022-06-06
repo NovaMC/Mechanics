@@ -4,7 +4,7 @@ description: Adds sitting, void tp, and more.
 version: 1.0-SNAPSHOT
 main: xyz.novaserver.mechanics.NovaMechanics
 api-version: 1.16
-softdepend: [floodgate, Essentials, NovaCutscenes]
+softdepend: [floodgate, Essentials, WorldGuard, NovaCutscenes]
 
 commands:
   novamech:
