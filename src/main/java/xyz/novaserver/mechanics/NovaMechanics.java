@@ -107,6 +107,10 @@ public class NovaMechanics extends JavaPlugin {
         }
     }
 
+    public Set<Feature> getEnabledFeatures() {
+        return enabledFeatures;
+    }
+
     public String getColorString(String path) {
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString(path, ""));
     }

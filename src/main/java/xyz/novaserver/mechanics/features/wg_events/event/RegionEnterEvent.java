@@ -52,6 +52,10 @@ public class RegionEnterEvent extends Event implements Cancellable {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public static RegionEnterEvent callEvent(LocalPlayer player, ApplicableRegionSet toSet, Set<ProtectedRegion> entered) {
         RegionEnterEvent event = new RegionEnterEvent(player, toSet, entered);
         Bukkit.getServer().getPluginManager().callEvent(event);

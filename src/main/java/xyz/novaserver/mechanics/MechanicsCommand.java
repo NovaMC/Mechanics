@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,9 +28,16 @@ public class MechanicsCommand implements TabExecutor {
             return true;
         }
 
-        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            plugin.reload();
-            sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config file!");
+        if (args.length > 0) {
+            if (args[0].equalsIgnoreCase("reload")) {
+                plugin.reload();
+                sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config file!");
+            } else if (args[0].equalsIgnoreCase("list")) {
+                sender.sendMessage(ChatColor.GREEN + "Currently enabled features:");
+                plugin.getEnabledFeatures().forEach(feature -> {
+                    sender.sendMessage(ChatColor.GREEN + feature.getClass().getSimpleName());
+                });
+            }
         }
         else {
             sender.sendMessage(ChatColor.YELLOW + "Type /novamech reload to reload the config.");
@@ -44,7 +52,7 @@ public class MechanicsCommand implements TabExecutor {
             return Collections.emptyList();
         }
 
-        final List<String> possibilities = Collections.singletonList("reload");
+        final List<String> possibilities = Arrays.asList("reload", "list");
         final List<String> completions = new ArrayList<>();
         StringUtil.copyPartialMatches(args[0], possibilities, completions);
 

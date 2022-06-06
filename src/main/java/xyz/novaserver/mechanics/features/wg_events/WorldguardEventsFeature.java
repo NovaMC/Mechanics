@@ -4,7 +4,7 @@ import com.sk89q.worldguard.WorldGuard;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.features.Feature;
 
-public class WGEventsFeature implements Feature {
+public class WorldguardEventsFeature implements Feature {
     @Override
     public void register(NovaMechanics mechanics) {
         if (mechanics.getServer().getPluginManager().isPluginEnabled("WorldGuard")) {

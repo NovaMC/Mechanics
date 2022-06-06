@@ -28,11 +28,15 @@ public class RegionHandler extends Handler {
 
     @Override
     public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
-        RegionEnterEvent enterEvent = RegionEnterEvent.callEvent(player, toSet, entered);
-        if (moveType.isCancellable() && enterEvent.isCancelled()) return false;
+        if (!entered.isEmpty()) {
+            RegionEnterEvent enterEvent = RegionEnterEvent.callEvent(player, toSet, entered);
+            if (moveType.isCancellable() && enterEvent.isCancelled()) return false;
+        }
 
-        RegionExitEvent exitEvent = RegionExitEvent.callEvent(player, toSet, exited);
-        if (moveType.isCancellable() && exitEvent.isCancelled()) return false;
+        if (!exited.isEmpty()) {
+            RegionExitEvent exitEvent = RegionExitEvent.callEvent(player, toSet, exited);
+            if (moveType.isCancellable() && exitEvent.isCancelled()) return false;
+        }
 
         return true;
     }

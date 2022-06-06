@@ -1,24 +1,19 @@
 package xyz.novaserver.mechanics.features.chatrooms;
 
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import xyz.novaserver.mechanics.features.wg_events.event.RegionEnterEvent;
+import xyz.novaserver.mechanics.features.wg_events.event.RegionExitEvent;
 
 import java.util.*;
 
 public class ChatroomsListener implements Listener {
     private final ChatroomsFeature feature;
-    private final WorldGuard worldGuard = WorldGuard.getInstance();
     private final Map<UUID, Chatroom> playerMap = new HashMap<>();
 
     public ChatroomsListener(ChatroomsFeature feature) {
@@ -50,18 +45,22 @@ public class ChatroomsListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        // grab player's world guard region
-        LocalPlayer player = WorldGuardPlugin.inst().wrapPlayer(event.getPlayer());
-        RegionContainer container = worldGuard.getPlatform().getRegionContainer();
-        ApplicableRegionSet regionSet = container.createQuery().getApplicableRegions(player.getLocation());
-        String chatroom = regionSet.queryValue(player, feature.getChatRoomFlag());
-        UUID uuid = player.getUniqueId();
-        if(chatroom == null || chatroom.equals("undefined") || !feature.getChatroomMap().containsKey(chatroom)) {
-            playerMap.remove(uuid);
-        }
-        else if (!playerMap.containsKey(uuid) || !playerMap.get(uuid).getId().equals(chatroom)) {
+    public void onRegionEnter(RegionEnterEvent event) {
+        String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
+        UUID uuid = event.getPlayer().getUniqueId();
+        // Player has entered or changed their chatroom
+        if (!playerMap.containsKey(uuid) || !playerMap.get(uuid).getId().equals(chatroom)) {
             playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
+        }
+    }
+
+    @EventHandler
+    public void onRegionExit(RegionExitEvent event) {
+        String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
+        UUID uuid = event.getPlayer().getUniqueId();
+        // Player has exited a chatroom
+        if (chatroom == null || chatroom.equals("undefined") || !feature.getChatroomMap().containsKey(chatroom)) {
+            playerMap.remove(uuid);
         }
     }
 

@@ -52,6 +52,10 @@ public class RegionExitEvent extends Event implements Cancellable {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public static RegionExitEvent callEvent(LocalPlayer player, ApplicableRegionSet toSet, Set<ProtectedRegion> exited) {
         RegionExitEvent event = new RegionExitEvent(player, toSet, exited);
         Bukkit.getServer().getPluginManager().callEvent(event);

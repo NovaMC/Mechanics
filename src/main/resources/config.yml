@@ -10,7 +10,7 @@ features:
   phone: false
   new-players: false
   chatrooms: false
-  wg-events: false
+  worldguard-events: false
 
 new-players:
   cutscene:
