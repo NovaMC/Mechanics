@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.novaserver.placeholders.paper.chat.format.Formatter;
-import xyz.novaserver.placeholders.paper.chat.util.MetaUtils;
+import xyz.novaserver.placeholders.paper.util.MetaUtils;
 
 public class ChatroomFormatter implements Formatter {
     private final ChatroomsFeature chatroomsFeature;
@@ -19,6 +19,7 @@ public class ChatroomFormatter implements Formatter {
     @Override
     public Component get(Player source, Component content, Audience viewer) {
         final ConfigurationSection config = chatroomsFeature.getConfig().getConfigurationSection("options.chat");
+        if (config == null) return Component.empty();
 
         boolean isBedrock = false;
         if (viewer instanceof Player playerViewer) {

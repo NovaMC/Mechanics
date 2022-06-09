@@ -20,7 +20,12 @@ options:
     category: MASTER
     volume: 0.75
     pitch: 1.0
-    title: "Left chatroom %chatroom%"
+    title:
+      java: ""
+      bedrock: ""
+    subtitle:
+      java: ""
+      bedrock: ""
   chat:
     java:
       prefix: "&f闫 "

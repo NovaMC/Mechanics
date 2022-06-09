@@ -31,12 +31,12 @@ public class ChatroomsListener implements Listener {
     public void onPlayerChat(AsyncChatEvent event) {
         UUID player = event.getPlayer().getUniqueId();
 
-        if(playerMap.containsKey(player)) {
+        if (playerMap.containsKey(player)) {
             Chatroom playerChatroom = playerMap.get(player);
             Set<Audience> viewers = new HashSet<>(event.viewers());
             for (Audience a : viewers) {
                 if (a instanceof Player p) {
-                    if(!playerMap.containsKey(p.getUniqueId())
+                    if (!playerMap.containsKey(p.getUniqueId())
                             || !playerMap.get(p.getUniqueId()).getId().equals(playerChatroom.getId())) {
                         event.viewers().remove(p);
                     }
@@ -44,9 +44,7 @@ public class ChatroomsListener implements Listener {
             }
         }
         else {
-            playerMap.keySet().forEach(p -> {
-                event.viewers().remove(Bukkit.getPlayer(p));
-            });
+            playerMap.keySet().forEach(p -> event.viewers().remove(Bukkit.getPlayer(p)));
         }
     }
 
@@ -56,13 +54,12 @@ public class ChatroomsListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
 
         // Player has entered or changed their chatroom
-        if (playerMap.containsKey(uuid) && playerMap.get(uuid).getId().equals(chatroom)) {
-            return;
-        }
-        playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
+        if (!playerMap.containsKey(uuid) || playerMap.get(uuid) == null || !playerMap.get(uuid).getId().equals(chatroom)) {
+            playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
 
-        // Set chatroom formatter on player
-        placeholders.getChatManager().getFancyRenderer().setFormat(Bukkit.getPlayer(uuid), formatter);
+            // Set chatroom formatter on player
+            placeholders.getChatManager().getFancyRenderer().setFormat(uuid, formatter);
+        }
     }
 
     @EventHandler
@@ -71,13 +68,12 @@ public class ChatroomsListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
 
         // Player has exited a chatroom
-        if (chatroom != null && !chatroom.equals("undefined") && feature.getChatroomMap().containsKey(chatroom)) {
-            return;
-        }
-        playerMap.remove(uuid);
+        if (chatroom == null || chatroom.equals("undefined") || !feature.getChatroomMap().containsKey(chatroom)) {
+            playerMap.remove(uuid);
 
-        // Remove chatroom formatter on player
-        placeholders.getChatManager().getFancyRenderer().removeFormat(Bukkit.getPlayer(uuid));
+            // Remove chatroom formatter on player
+            placeholders.getChatManager().getFancyRenderer().removeFormat(uuid);
+        }
     }
 
     @EventHandler
