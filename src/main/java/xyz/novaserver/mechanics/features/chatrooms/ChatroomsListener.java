@@ -34,14 +34,14 @@ public class ChatroomsListener implements Listener {
         if (playerMap.containsKey(player)) {
             Chatroom playerChatroom = playerMap.get(player);
             Set<Audience> viewers = new HashSet<>(event.viewers());
-            for (Audience a : viewers) {
-                if (a instanceof Player p) {
+            viewers.forEach(viewer -> {
+                if (viewer instanceof Player p) {
                     if (!playerMap.containsKey(p.getUniqueId())
                             || !playerMap.get(p.getUniqueId()).getId().equals(playerChatroom.getId())) {
                         event.viewers().remove(p);
                     }
                 }
-            }
+            });
         }
         else {
             playerMap.keySet().forEach(p -> event.viewers().remove(Bukkit.getPlayer(p)));
@@ -55,10 +55,12 @@ public class ChatroomsListener implements Listener {
 
         // Player has entered or changed their chatroom
         if (!playerMap.containsKey(uuid) || playerMap.get(uuid) == null || !playerMap.get(uuid).getId().equals(chatroom)) {
-            playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
+            if (feature.getChatroomMap().containsKey(chatroom)) {
+                playerMap.put(uuid, feature.getChatroomMap().get(chatroom));
 
-            // Set chatroom formatter on player
-            placeholders.getChatManager().getFancyRenderer().setFormat(uuid, formatter);
+                // Set chatroom formatter on player
+                placeholders.getChatManager().getFancyRenderer().setFormat(uuid, formatter);
+            }
         }
     }
 
