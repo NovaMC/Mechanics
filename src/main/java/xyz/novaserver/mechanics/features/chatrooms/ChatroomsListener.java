@@ -1,28 +1,28 @@
 package xyz.novaserver.mechanics.features.chatrooms;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.essentialsx.api.v2.events.discord.DiscordChatMessageEvent;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.geysermc.floodgate.api.FloodgateApi;
+import xyz.novaserver.mechanics.features.chatrooms.util.TitleData;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionEnterEvent;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionExitEvent;
+import xyz.novaserver.mechanics.features.wg_events.event.RegionInitializeEvent;
 import xyz.novaserver.placeholders.paper.Main;
-import xyz.novaserver.placeholders.paper.util.MetaUtils;
 
 import java.util.*;
 
 public class ChatroomsListener implements Listener {
     private final ChatroomsFeature feature;
+
     private final ChatroomFormatter formatter;
     private final Main placeholders;
-    private final TitleData config;
+
+    private final TitleData titleData;
     private final Map<UUID, Chatroom> playerMap = new HashMap<>();
 
     public ChatroomsListener(ChatroomsFeature feature) {
@@ -30,7 +30,7 @@ public class ChatroomsListener implements Listener {
         this.feature = feature;
         this.formatter = new ChatroomFormatter(feature);
         this.placeholders = (Main) Bukkit.getPluginManager().getPlugin("NovaPlaceholders");
-        this.config = feature.getTitleData();
+        this.titleData = feature.getTitleData();
     }
 
     @EventHandler
@@ -48,17 +48,53 @@ public class ChatroomsListener implements Listener {
                     }
                 }
             });
-        }
-        else {
+        } else {
             playerMap.keySet().forEach(p -> event.viewers().remove(Bukkit.getPlayer(p)));
         }
     }
 
-    @SuppressWarnings("PatternValidation")
+    @EventHandler
+    public void onDiscordChat(DiscordChatMessageEvent event) {
+        // Block EssentialsDiscord messages from being sent when player is in a chatroom
+        if (playerMap.containsKey(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onRegionInitialize(RegionInitializeEvent event) {
+        final String chatroom = event.getApplicableSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
+        final UUID uuid = event.getPlayer().getUniqueId();
+
+        onRegionJoin(uuid, chatroom);
+    }
+
     @EventHandler
     public void onRegionEnter(RegionEnterEvent event) {
-        String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
-        UUID uuid = event.getPlayer().getUniqueId();
+        final String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
+        final UUID uuid = event.getPlayer().getUniqueId();
+
+        onRegionJoin(uuid, chatroom);
+    }
+
+    @EventHandler
+    public void onRegionExit(RegionExitEvent event) {
+        final String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
+        final UUID uuid = event.getPlayer().getUniqueId();
+
+        // Player has exited a chatroom
+        if (playerMap.containsKey(uuid) && (chatroom == null || !feature.getChatroomMap().containsKey(chatroom))) {
+            // Remove chatroom formatter on player
+            placeholders.getChatManager().getFancyRenderer().removeFormat(uuid);
+
+            Player player = Bukkit.getPlayer(uuid);
+            titleData.sendLeave(player, playerMap.get(uuid));
+
+            playerMap.remove(uuid);
+        }
+    }
+
+    private void onRegionJoin(UUID uuid, String chatroom) {
         // Player has entered or changed their chatroom
         if (!playerMap.containsKey(uuid) || playerMap.get(uuid) == null || !playerMap.get(uuid).getId().equals(chatroom)) {
             if (feature.getChatroomMap().containsKey(chatroom)) {
@@ -66,46 +102,8 @@ public class ChatroomsListener implements Listener {
                 // Set chatroom formatter on player
                 placeholders.getChatManager().getFancyRenderer().setFormat(uuid, formatter);
 
-                Player p = Bukkit.getPlayer(uuid);
-                if(p == null) return;
-                // play sound
-                p.playSound(Sound.sound(Key.key(config.getJoinSound()), Sound.Source.valueOf(config.getSoundCategory()), config.getVolume(), config.getPitch()));
-                // check for bedrock
-                boolean isBedrock = FloodgateApi.getInstance().isFloodgatePlayer(p.getUniqueId());
-                if(!isBedrock) {
-                    p.showTitle(Title.title(MetaUtils.asComponent(config.getJoinMessage()), MetaUtils.asComponent(config.getJoinSubMessage())));
-                }
-                else {
-                    p.showTitle(Title.title(MetaUtils.asComponent(config.getJoinMessageBedrock()), MetaUtils.asComponent(config.getJoinSubMessageBedrock())));
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("PatternValidation")
-    @EventHandler
-    public void onRegionExit(RegionExitEvent event) {
-        String chatroom = event.getToSet().queryValue(event.getPlayer(), feature.getChatRoomFlag());
-        UUID uuid = event.getPlayer().getUniqueId();
-
-        // Player has exited a chatroom
-        if (chatroom == null || chatroom.equals("undefined") || !feature.getChatroomMap().containsKey(chatroom)) {
-            playerMap.remove(uuid);
-
-            // Remove chatroom formatter on player
-            placeholders.getChatManager().getFancyRenderer().removeFormat(uuid);
-
-            Player p = Bukkit.getPlayer(uuid);
-            if(p == null) return;
-            // play sound
-            p.playSound(Sound.sound(Key.key(config.getLeaveSound()), Sound.Source.valueOf(config.getSoundCategory()), config.getVolume(), config.getPitch()));
-            // check for bedrock
-            boolean isBedrock = FloodgateApi.getInstance().isFloodgatePlayer(p.getUniqueId());
-            if(!isBedrock) {
-                p.showTitle(Title.title(MetaUtils.asComponent(config.getLeaveMessage()), MetaUtils.asComponent(config.getLeaveSubMessage())));
-            }
-            else {
-                p.showTitle(Title.title(MetaUtils.asComponent(config.getLeaveMessageBedrock()), MetaUtils.asComponent(config.getLeaveSubMessageBedrock())));
+                Player player = Bukkit.getPlayer(uuid);
+                titleData.sendJoin(player, playerMap.get(uuid));
             }
         }
     }

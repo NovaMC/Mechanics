@@ -5,7 +5,6 @@ import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,6 +12,8 @@ import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.features.EarlyLoadable;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.features.Reloadable;
+import xyz.novaserver.mechanics.features.chatrooms.util.ChatroomUtils;
+import xyz.novaserver.mechanics.features.chatrooms.util.TitleData;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
     public void onLoad(NovaMechanics mechanics) {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
-            StringFlag flag = new StringFlag("chatroom", "undefined");
+            StringFlag flag = new StringFlag("chatroom");
             registry.register(flag);
             chatRoomFlag = flag;
         } catch (FlagConflictException e) {
@@ -62,16 +63,19 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
             return;
         }
         chatroomMap.clear();
-        config.getConfigurationSection("chatrooms").getKeys(false).stream()
-                .map(s -> config.getConfigurationSection("chatrooms." + s))
-                .forEach(section -> {
-                    if (section != null) {
-                        Chatroom chatroom = parseChatroom(section);
-                        chatroomMap.put(chatroom.getId(), chatroom);
-                    }
-                });
-        titleData.reload(config);
 
+        ConfigurationSection chatrooms = config.getConfigurationSection("chatrooms");
+        if (chatrooms != null) {
+            chatrooms.getKeys(false).stream()
+                    .map(s -> config.getConfigurationSection("chatrooms." + s))
+                    .forEach(section -> {
+                        if (section != null) {
+                            Chatroom chatroom = parseChatroom(section);
+                            chatroomMap.put(chatroom.getId(), chatroom);
+                        }
+                    });
+        }
+        titleData.reload(config);
     }
 
     private YamlConfiguration loadConfig(NovaMechanics mechanics) {
@@ -99,10 +103,7 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
     }
 
     private Chatroom parseChatroom(ConfigurationSection section) {
-        MiniMessage mm = MiniMessage.miniMessage();
-        Component name = mm.deserialize(section.getString("name", ""));
-        Component joinTitle = mm.deserialize(section.getString("join-title", ""));
-        Component leaveTitle = mm.deserialize(section.getString("leave-title", ""));
-        return new Chatroom(section.getName(), name, joinTitle, leaveTitle);
+        Component name = ChatroomUtils.asComponent(section.getString("name", ""));
+        return new Chatroom(section.getName(), name);
     }
 }

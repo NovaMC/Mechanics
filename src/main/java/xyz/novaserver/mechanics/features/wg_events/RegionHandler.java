@@ -9,6 +9,7 @@ import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionEnterEvent;
 import xyz.novaserver.mechanics.features.wg_events.event.RegionExitEvent;
+import xyz.novaserver.mechanics.features.wg_events.event.RegionInitializeEvent;
 
 import java.util.Set;
 
@@ -24,6 +25,13 @@ public class RegionHandler extends Handler {
 
     public RegionHandler(Session session) {
         super(session);
+    }
+
+    @Override
+    public void initialize(LocalPlayer player, Location current, ApplicableRegionSet set) {
+        if (!set.getRegions().isEmpty()) {
+            RegionInitializeEvent.callEvent(player, set, set.getRegions());
+        }
     }
 
     @Override

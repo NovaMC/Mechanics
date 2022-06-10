@@ -4,12 +4,12 @@ options:
     # Default: unknown
     sound: "minecraft:block.beacon.activate"
     # The category to play the sound on
-    # You can find all categories here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+    # You can find all categories here: https://jd.adventure.kyori.net/api/4.10.1/net/kyori/adventure/sound/Sound.Source.html
     # Default: RECORDS
     category: MASTER
     # Volume to play the sound at
     # Default: 1.0
-    volume: 0.75
+    volume: 0.5
     # Pitch to play the sound at
     # Default: 1.0
     pitch: 1.0
@@ -23,7 +23,7 @@ options:
   leave:
     sound: "minecraft:block.beacon.deactivate"
     category: MASTER
-    volume: 0.75
+    volume: 0.5
     pitch: 1.0
     title:
       java: "chatroom"

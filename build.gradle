@@ -23,6 +23,7 @@ dependencies {
     compileOnly ('net.essentialsx:EssentialsX:2.19.4') {
         exclude group: 'org.bstats', module: 'bstats-bukkit'
     }
+    compileOnly 'net.essentialsx:EssentialsXDiscord:2.19.4'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
     compileOnly 'xyz.novaserver:NovaCutscenes:1.0-SNAPSHOT'
     compileOnly 'xyz.novaserver.placeholders:paper:2.0-SNAPSHOT'
