@@ -14,18 +14,23 @@ options:
     # Default: 1.0
     pitch: 1.0
     # Title to display on screen
-    title: "Joined chatroom %chatroom%"
+    title:
+      java: "chatroom"
+      bedrock: "chatroom"
+    subtitle:
+      java: "Joined <chatroom>"
+      bedrock: "Joined <chatroom>"
   leave:
     sound: "minecraft:block.beacon.deactivate"
     category: MASTER
     volume: 0.75
     pitch: 1.0
     title:
-      java: ""
-      bedrock: ""
+      java: "chatroom"
+      bedrock: "chatroom"
     subtitle:
-      java: ""
-      bedrock: ""
+      java: "Left <chatroom>"
+      bedrock: "Left <chatroom>"
   chat:
     java:
       prefix: "&f闫 "
