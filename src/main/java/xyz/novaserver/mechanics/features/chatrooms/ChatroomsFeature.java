@@ -8,10 +8,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.features.EarlyLoadable;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.features.Reloadable;
+import xyz.novaserver.mechanics.features.chatrooms.listener.ChatroomsListener;
+import xyz.novaserver.mechanics.features.chatrooms.listener.DiscordListener;
 import xyz.novaserver.mechanics.features.chatrooms.util.ChatroomUtils;
 import xyz.novaserver.mechanics.features.chatrooms.util.TitleData;
 
@@ -19,12 +22,35 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
-    private StringFlag chatRoomFlag;
-    private final Map<String, Chatroom> chatroomMap = new HashMap<>();
+    private StringFlag chatroomFlag;
     private YamlConfiguration config;
     private TitleData titleData;
+
+    private final Map<String, Chatroom> chatrooms = new HashMap<>();
+    private final Map<UUID, Chatroom> playerMap = new HashMap<>();
+
+    public Map<String, Chatroom> chatrooms() {
+        return chatrooms;
+    }
+
+    public Map<UUID, Chatroom> playerMap() {
+        return playerMap;
+    }
+
+    public StringFlag chatroomFlag() {
+        return chatroomFlag;
+    }
+
+    public YamlConfiguration config() {
+        return config;
+    }
+
+    public TitleData titleData() {
+        return titleData;
+    }
 
     @Override
     public void onLoad(NovaMechanics mechanics) {
@@ -32,7 +58,7 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
         try {
             StringFlag flag = new StringFlag("chatroom");
             registry.register(flag);
-            chatRoomFlag = flag;
+            chatroomFlag = flag;
         } catch (FlagConflictException e) {
             mechanics.getSLF4JLogger().error("Failed to register chatroom flag! Check for conflicting plugins.", e);
         }
@@ -40,20 +66,17 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
 
     @Override
     public void register(NovaMechanics mechanics) {
-        if (!mechanics.getServer().getPluginManager().isPluginEnabled("NovaPlaceholders")) {
+        PluginManager pluginManager = mechanics.getServer().getPluginManager();
+        if (!pluginManager.isPluginEnabled("NovaPlaceholders")) {
             return;
         }
         titleData = new TitleData();
         reload(mechanics);
-        mechanics.getServer().getPluginManager().registerEvents(new ChatroomsListener(this), mechanics);
-    }
-
-    public Map<String, Chatroom> getChatroomMap() {
-        return chatroomMap;
-    }
-
-    public StringFlag getChatRoomFlag() {
-        return chatRoomFlag;
+        pluginManager.registerEvents(new ChatroomsListener(this), mechanics);
+        // Only register discord listener if the plugin is enabled
+        if (pluginManager.isPluginEnabled("EssentialsDiscord")) {
+            pluginManager.registerEvents(new DiscordListener(this), mechanics);
+        }
     }
 
     @Override
@@ -62,7 +85,7 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
         if (config == null) {
             return;
         }
-        chatroomMap.clear();
+        chatrooms.clear();
 
         ConfigurationSection chatrooms = config.getConfigurationSection("chatrooms");
         if (chatrooms != null) {
@@ -71,7 +94,7 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
                     .forEach(section -> {
                         if (section != null) {
                             Chatroom chatroom = parseChatroom(section);
-                            chatroomMap.put(chatroom.getId(), chatroom);
+                            this.chatrooms.put(chatroom.getId(), chatroom);
                         }
                     });
         }
@@ -92,14 +115,6 @@ public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
             return null;
         }
         return config;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
-    public TitleData getTitleData() {
-        return titleData;
     }
 
     private Chatroom parseChatroom(ConfigurationSection section) {

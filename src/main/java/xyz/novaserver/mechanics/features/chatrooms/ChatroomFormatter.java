@@ -18,7 +18,7 @@ public class ChatroomFormatter implements Formatter {
 
     @Override
     public Component get(Player source, Component content, Audience viewer) {
-        final ConfigurationSection config = chatroomsFeature.getConfig().getConfigurationSection("options.chat");
+        final ConfigurationSection config = chatroomsFeature.config().getConfigurationSection("options.chat");
         if (config == null) return Component.empty();
 
         boolean isBedrock = false;
