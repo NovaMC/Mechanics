@@ -11,7 +11,7 @@ public class SimpleMenuButton extends MenuButton {
         this.buttonHandler = buttonHandler;
     }
 
-    public Runnable getButtonHandler() {
+    public Runnable buttonHandler() {
         return buttonHandler;
     }
 }

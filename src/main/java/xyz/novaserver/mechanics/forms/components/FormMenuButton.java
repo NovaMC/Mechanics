@@ -12,7 +12,7 @@ public class FormMenuButton extends MenuButton {
         this.form = form;
     }
 
-    public MenuForm<?> getForm() {
+    public MenuForm<?> form() {
         return form;
     }
 }

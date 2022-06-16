@@ -10,7 +10,7 @@ public class MenuButton {
         this.buttonComponent = buttonComponent;
     }
 
-    public ButtonComponent getButtonComponent() {
+    public ButtonComponent buttonComponent() {
         return buttonComponent;
     }
 }

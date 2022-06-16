@@ -18,11 +18,11 @@ public abstract class MenuForm<T> {
         this(null, title);
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public MenuForm<?> getParent() {
+    public MenuForm<?> parent() {
         return parent;
     }
 

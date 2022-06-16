@@ -1,10 +1,9 @@
 package xyz.novaserver.mechanics.forms;
 
 import net.kyori.adventure.text.Component;
-import org.geysermc.cumulus.Form;
-import org.geysermc.cumulus.SimpleForm;
+import org.geysermc.cumulus.form.Form;
+import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.component.ButtonComponent;
-import org.geysermc.cumulus.response.SimpleFormResponse;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import xyz.novaserver.mechanics.forms.components.FormMenuButton;
 import xyz.novaserver.mechanics.forms.components.MenuButton;
@@ -22,7 +21,7 @@ public class SimpleMenuForm extends MenuForm<SimpleForm> {
 
     public SimpleMenuForm(MenuForm<?> parent, Component title, Component content) {
         super(parent, title);
-        setContent(content);
+        content(content);
     }
 
     public SimpleMenuForm(MenuForm<?> parent, Component title) {
@@ -37,22 +36,22 @@ public class SimpleMenuForm extends MenuForm<SimpleForm> {
         this(title, Component.empty());
     }
 
-    public String getContent() {
+    public String content() {
         return content;
     }
 
-    public SimpleMenuForm setContent(Component content) {
+    public SimpleMenuForm content(Component content) {
         this.content = ItemUtils.toLegacyString(content);
         return this;
     }
 
-    public SimpleMenuForm addFormButton(MenuForm<?> form) {
+    public SimpleMenuForm formButton(MenuForm<?> form) {
         menuButtons.add(new FormMenuButton(
-                ButtonComponent.of(form.getTitle()), form));
+                ButtonComponent.of(form.title()), form));
         return this;
     }
 
-    public SimpleMenuForm addSimpleButton(Component text, Runnable buttonHandler) {
+    public SimpleMenuForm simpleButton(Component text, Runnable buttonHandler) {
         menuButtons.add(new SimpleMenuButton(
                 ButtonComponent.of(ItemUtils.toLegacyString(text)), buttonHandler));
         return this;
@@ -61,21 +60,28 @@ public class SimpleMenuForm extends MenuForm<SimpleForm> {
     @Override
     public SimpleForm create(FloodgatePlayer player) {
         // Create form with title, description, and mapped button list
-        SimpleForm form = SimpleForm.of(getTitle(), getContent(), menuButtons.stream().map(MenuButton::getButtonComponent).toList());
+        SimpleForm.Builder builder = SimpleForm.builder().title(title()).content(content());
+        // Add buttons to builder
+        for (MenuButton menuButton : menuButtons) {
+            ButtonComponent buttonComponent = menuButton.buttonComponent();
+            builder = builder.button(buttonComponent.text(), buttonComponent.image());
+        }
 
-        // Handle the response for the buttons on the form
-        form.setResponseHandler(data -> {
-            SimpleFormResponse response = form.parseResponse(data);
-            if (response.isClosed() && getParent() != null) player.sendForm((Form) getParent().create(player));
-            if (!response.isCorrect()) return;
-
-            MenuButton button = menuButtons.get(response.getClickedButtonId());
+        // Set closed handler to send parent form if available
+        builder = builder.closedResultHandler(() -> {
+            if (parent() != null) {
+                player.sendForm((Form) parent().create(player));
+            }
+        }).validResultHandler(response -> {
+            // Handle the response for the buttons on the form
+            MenuButton button = menuButtons.get(response.clickedButtonId());
             if (button instanceof SimpleMenuButton) {
-                ((SimpleMenuButton) button).getButtonHandler().run();
+                ((SimpleMenuButton) button).buttonHandler().run();
             } else if (button instanceof FormMenuButton) {
-                player.sendForm((Form) ((FormMenuButton) button).getForm().create(player));
+                player.sendForm((Form) ((FormMenuButton) button).form().create(player));
             }
         });
-        return form;
+
+        return builder.build();
     }
 }

@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.geysermc.cumulus.SimpleForm;
+import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.floodgate.api.FloodgateApi;
 import xyz.novaserver.mechanics.NovaMechanics;
 import xyz.novaserver.mechanics.forms.CustomMenuForm;
@@ -129,50 +129,50 @@ public class NavigationListener implements Listener {
         List<String> playerNames = essentials.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player)).map(HumanEntity::getName).toList();
         if (!playerNames.isEmpty()) {
-            playersForm.setContent(Component.text("Choose a player to teleport to."));
+            playersForm.content(Component.text("Choose a player to teleport to."));
         } else {
-            playersForm.setContent(Component.text("There are no players online."));
+            playersForm.content(Component.text("There are no players online."));
         }
-        playerNames.forEach(p -> playersForm.addSimpleButton(Component.text(p), () -> player.performCommand("tpa " + p)));
+        playerNames.forEach(p -> playersForm.simpleButton(Component.text(p), () -> player.performCommand("tpa " + p)));
         // Players end
 
         // Locations start
         // Add locations to the location menu
-        teleportsForm.addSimpleButton(Component.text("Spawn"), () -> player.performCommand("spawn"))
-                .addSimpleButton(Component.text("Wild/Random"), () -> player.performCommand("wild"));
+        teleportsForm.simpleButton(Component.text("Spawn"), () -> player.performCommand("spawn"))
+                .simpleButton(Component.text("Wild/Random"), () -> player.performCommand("wild"));
         // Locations end
 
         // Homes start
         List<String> homes = essUser.getHomes();
         CustomMenuForm addHome = new CustomMenuForm(homesForm, Component.text("Add Home").color(NamedTextColor.DARK_GREEN));
         CustomMenuForm deleteHome = new CustomMenuForm(homesForm, Component.text("Delete Home").color(NamedTextColor.DARK_RED));
-        addHome.addInput(name -> player.performCommand("sethome " + name),
+        addHome.input(name -> player.performCommand("sethome " + name),
                 Component.text("Enter a name for your home."), "Enter name here...", "");
-        deleteHome.addDropdown(select -> player.performCommand("delhome " + homes.get(select)),
+        deleteHome.dropdown(select -> player.performCommand("delhome " + homes.get(select)),
                 Component.text("Select a home to delete."), 0, homes.toArray(new String[0]));
 
-        homesForm.addFormButton(addHome);
+        homesForm.formButton(addHome);
         if (!homes.isEmpty())
-            homesForm.addFormButton(deleteHome);
-        homes.forEach(home -> homesForm.addSimpleButton(Component.text(home), () -> player.performCommand("home " + home)));
+            homesForm.formButton(deleteHome);
+        homes.forEach(home -> homesForm.simpleButton(Component.text(home), () -> player.performCommand("home " + home)));
         // Homes end
 
         // Settings start
-        settingsForm.addSimpleButton(Component.text("Toggle PvP").color(NamedTextColor.RED), () -> player.performCommand("togglepvp"))
-                .addSimpleButton(Component.text("Toggle Scoreboard").color(NamedTextColor.DARK_PURPLE),
+        settingsForm.simpleButton(Component.text("Toggle PvP").color(NamedTextColor.RED), () -> player.performCommand("togglepvp"))
+                .simpleButton(Component.text("Toggle Scoreboard").color(NamedTextColor.DARK_PURPLE),
                         () -> plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "tab scoreboard toggle " + player.getName()));
         // Settings end
 
         // Main menu start
         // Add main menu form buttons
         if (hasTpRequest) {
-            menuForm.addSimpleButton(Component.text("Accept Teleport").color(NamedTextColor.GREEN), () -> player.performCommand("tpaccept"))
-                    .addSimpleButton(Component.text("Deny Teleport").color(NamedTextColor.RED), () -> player.performCommand("tpdeny"));
+            menuForm.simpleButton(Component.text("Accept Teleport").color(NamedTextColor.GREEN), () -> player.performCommand("tpaccept"))
+                    .simpleButton(Component.text("Deny Teleport").color(NamedTextColor.RED), () -> player.performCommand("tpdeny"));
         }
-        menuForm.addFormButton(playersForm)
-                .addFormButton(teleportsForm)
-                .addFormButton(homesForm)
-                .addFormButton(settingsForm);
+        menuForm.formButton(playersForm)
+                .formButton(teleportsForm)
+                .formButton(homesForm)
+                .formButton(settingsForm);
         // Main menu end
 
         return menuForm.create(floodgate.getPlayer(player.getUniqueId()));

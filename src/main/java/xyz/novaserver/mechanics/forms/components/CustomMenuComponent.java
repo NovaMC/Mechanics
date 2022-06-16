@@ -14,11 +14,11 @@ public class CustomMenuComponent {
         this.componentHandler = componentHandler;
     }
 
-    public Component getComponent() {
+    public Component component() {
         return component;
     }
 
-    public Consumer<?> getComponentHandler() {
+    public Consumer<?> componentHandler() {
         return componentHandler;
     }
 }
