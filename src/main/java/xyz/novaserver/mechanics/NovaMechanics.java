@@ -13,11 +13,13 @@ public class NovaMechanics extends JavaPlugin {
     public void onLoad() {
         saveDefaultConfig();
 
+        // Enable features that need to load early
         for (FeatureRegistry feature : FeatureRegistry.values()) {
             if (enabledInConfig(feature.getFeatureName())
                     && EarlyLoaded.class.isAssignableFrom(feature.getFeatureClass())) {
                 try {
                     FeatureRegistry.enable(feature);
+                    getSLF4JLogger().info("Enabling feature early: " + feature.getFeatureName());
                 } catch (ReflectiveOperationException e) {
                     getSLF4JLogger().error("A reflection error occurred while trying to register features!", e);
                 }
@@ -29,10 +31,10 @@ public class NovaMechanics extends JavaPlugin {
     public void onEnable() {
         // Enable features that don't load early
         for (FeatureRegistry feature : FeatureRegistry.values()) {
-            if (enabledInConfig(feature.getFeatureName())
-                    && !FeatureRegistry.getEnabledFeatures().contains(feature.getFeature())) {
+            if (enabledInConfig(feature.getFeatureName()) && feature.getFeature() == null) {
                 try {
                     FeatureRegistry.enable(feature);
+                    getSLF4JLogger().info("Enabling feature: " + feature.getFeatureName());
                 } catch (ReflectiveOperationException e) {
                     getSLF4JLogger().error("A reflection error occurred while trying to register features!", e);
                 }
@@ -68,7 +70,7 @@ public class NovaMechanics extends JavaPlugin {
     }
 
     private boolean enabledInConfig(String featureName) {
-        return getConfig().getBoolean("feature." + featureName, false);
+        return getConfig().getBoolean("features." + featureName, false);
     }
 
     public String getColorString(String path) {

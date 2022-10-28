@@ -31,8 +31,8 @@ public enum FeatureRegistry {
 
     public static Set<Feature> getEnabledFeatures() {
         return Arrays.stream(values())
-                .filter(feature -> feature.getFeatureClass() != null)
                 .map(FeatureRegistry::getFeature)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
