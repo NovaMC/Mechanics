@@ -7,13 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import xyz.novaserver.core.event.RegionEnterEvent;
+import xyz.novaserver.core.event.RegionExitEvent;
+import xyz.novaserver.core.event.RegionInitializeEvent;
 import xyz.novaserver.mechanics.features.chatrooms.Chatroom;
 import xyz.novaserver.mechanics.features.chatrooms.ChatroomFormatter;
 import xyz.novaserver.mechanics.features.chatrooms.ChatroomsFeature;
 import xyz.novaserver.mechanics.features.chatrooms.util.TitleData;
-import xyz.novaserver.mechanics.features.wg_events.event.RegionEnterEvent;
-import xyz.novaserver.mechanics.features.wg_events.event.RegionExitEvent;
-import xyz.novaserver.mechanics.features.wg_events.event.RegionInitializeEvent;
 import xyz.novaserver.placeholders.paper.Main;
 
 import java.util.*;

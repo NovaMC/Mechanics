@@ -10,7 +10,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import xyz.novaserver.mechanics.NovaMechanics;
-import xyz.novaserver.mechanics.features.EarlyLoadable;
+import xyz.novaserver.mechanics.features.EarlyLoaded;
 import xyz.novaserver.mechanics.features.Feature;
 import xyz.novaserver.mechanics.features.Reloadable;
 import xyz.novaserver.mechanics.features.chatrooms.listener.ChatroomsListener;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ChatroomsFeature implements Feature, EarlyLoadable, Reloadable {
+public class ChatroomsFeature implements Feature, EarlyLoaded, Reloadable {
     private StringFlag chatroomFlag;
     private YamlConfiguration config;
     private TitleData titleData;

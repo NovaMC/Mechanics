@@ -1,9 +1,11 @@
 name: NovaMechanics
-author: Nova
+author: Lui798
 description: Adds sitting, void tp, and more.
 version: 1.0-SNAPSHOT
 main: xyz.novaserver.mechanics.NovaMechanics
 api-version: 1.16
+depend:
+  - NovaCore
 softdepend:
   - floodgate
   - Essentials

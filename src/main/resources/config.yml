@@ -1,16 +1,15 @@
 # Enable or disable various features in the plugin
 features:
   chairs: false
+  chatrooms: false
   launchpads: false
   navigation-book: false
+  new-players: false
+  phone: false
   pinging: false
   portal-coords: false
-  void-fall: false
   proxy-cmd: false
-  phone: false
-  new-players: false
-  chatrooms: false
-  worldguard-events: false
+  void-fall: false
 
 new-players:
   cutscene:
