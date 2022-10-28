@@ -7,7 +7,6 @@ import xyz.novaserver.mechanics.features.launch_pads.LaunchpadsFeature;
 import xyz.novaserver.mechanics.features.navigation_book.NavigationBookFeature;
 import xyz.novaserver.mechanics.features.new_players.NewPlayersFeature;
 import xyz.novaserver.mechanics.features.phone_menu.PhoneFeature;
-import xyz.novaserver.mechanics.features.pinging.PingingFeature;
 import xyz.novaserver.mechanics.features.portal_coords.PortalCoordsFeature;
 import xyz.novaserver.mechanics.features.proxy_cmd.ProxyCmdFeature;
 import xyz.novaserver.mechanics.features.void_fall.VoidFallFeature;
@@ -22,7 +21,6 @@ public enum FeatureRegistry {
     NAVIGATION_BOOK(NavigationBookFeature.class, "navigation-book"),
     NEW_PLAYER(NewPlayersFeature.class, "new-players"),
     PHONE_MENU(PhoneFeature.class, "phone"),
-    PING_FEATURE(PingingFeature.class, "pinging"),
     PORTAL_COORDS(PortalCoordsFeature.class, "portal-coords"),
     PROXY_CMD(ProxyCmdFeature.class, "proxy-cmd"),
     VOID_FALL(VoidFallFeature.class, "void-fall");

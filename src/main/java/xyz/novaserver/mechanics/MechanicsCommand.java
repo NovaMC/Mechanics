@@ -34,7 +34,7 @@ public class MechanicsCommand implements TabExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config file!");
             } else if (args[0].equalsIgnoreCase("list")) {
                 sender.sendMessage(ChatColor.GREEN + "Currently enabled features:");
-                plugin.getEnabledFeatures().forEach(feature -> {
+                FeatureRegistry.getEnabledFeatures().forEach(feature -> {
                     sender.sendMessage(ChatColor.GREEN + feature.getClass().getSimpleName());
                 });
             }

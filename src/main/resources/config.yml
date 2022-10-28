@@ -6,7 +6,6 @@ features:
   navigation-book: false
   new-players: false
   phone: false
-  pinging: false
   portal-coords: false
   proxy-cmd: false
   void-fall: false
