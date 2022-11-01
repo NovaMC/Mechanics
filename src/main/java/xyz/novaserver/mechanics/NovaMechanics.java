@@ -18,8 +18,10 @@ public class NovaMechanics extends JavaPlugin {
             if (enabledInConfig(feature.getFeatureName())
                     && EarlyLoaded.class.isAssignableFrom(feature.getFeatureClass())) {
                 try {
-                    FeatureRegistry.enable(feature);
                     getSLF4JLogger().info("Enabling feature early: " + feature.getFeatureName());
+                    FeatureRegistry.enable(feature);
+                    // Call onLoad function of EarlyLoaded after feature is enabled
+                    ((EarlyLoaded) feature.getFeature()).onLoad(this);
                 } catch (ReflectiveOperationException e) {
                     getSLF4JLogger().error("A reflection error occurred while trying to register features!", e);
                 }
@@ -33,16 +35,18 @@ public class NovaMechanics extends JavaPlugin {
         for (FeatureRegistry feature : FeatureRegistry.values()) {
             if (enabledInConfig(feature.getFeatureName()) && feature.getFeature() == null) {
                 try {
-                    FeatureRegistry.enable(feature);
                     getSLF4JLogger().info("Enabling feature: " + feature.getFeatureName());
+                    FeatureRegistry.enable(feature);
+                    // Register the feature after enabling
+                    feature.getFeature().register(this);
                 } catch (ReflectiveOperationException e) {
                     getSLF4JLogger().error("A reflection error occurred while trying to register features!", e);
                 }
+            } else if (feature.getFeature() != null) {
+                // Register any features that have been EarlyLoaded
+                feature.getFeature().register(this);
             }
         }
-
-        // Register all enabled features
-        FeatureRegistry.getEnabledFeatures().forEach(feature -> feature.register(this));
 
         //noinspection ConstantConditions
         getCommand("novamech").setExecutor(new MechanicsCommand(this));
