@@ -5,7 +5,7 @@ version: 1.0-SNAPSHOT
 main: xyz.novaserver.mechanics.NovaMechanics
 api-version: 1.16
 depend:
-  - NovaCore
+  - NovaLib
 softdepend:
   - floodgate
   - Essentials
